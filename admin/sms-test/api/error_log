@@ -1,0 +1,4 @@
+[29-Oct-2025 18:41:54 UTC] SMS Send Attempt: {"timestamp":"2025-10-29 18:41:54","customer_mobile":"0778553032","recipient":"94778553032","payment_amount":250,"remaining_balance":150,"success":true,"http_code":200}
+[29-Oct-2025 18:44:11 UTC] SMS Send Attempt: {"timestamp":"2025-10-29 18:44:11","customer_mobile":"0778553032","recipient":"94778553032","payment_amount":250,"remaining_balance":150,"success":true,"http_code":200}
+[29-Oct-2025 18:46:31 UTC] SMS Send Attempt: {"timestamp":"2025-10-29 18:46:31","customer_mobile":"0778553032","recipient":"94778553032","payment_amount":250,"remaining_balance":150,"success":true,"http_code":200}
+[29-Oct-2025 18:47:07 UTC] SMS Send Attempt: {"timestamp":"2025-10-29 18:47:07","customer_mobile":"0778553032","recipient":"94778553032","payment_amount":250,"remaining_balance":150,"success":true,"http_code":200}

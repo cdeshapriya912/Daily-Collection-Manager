@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect x="32" y="32" width="448" height="448" rx="72" fill="#16a34a"/>
+  <g fill="#fff">
+    <rect x="160" y="176" width="192" height="28" rx="14"/>
+    <rect x="160" y="246" width="192" height="28" rx="14"/>
+    <rect x="160" y="316" width="128" height="28" rx="14"/>
+  </g>
+  <title>Daily Collection Manager</title>
+  <desc>Green rounded square with white lines</desc>
+</svg>
+
+
+
+

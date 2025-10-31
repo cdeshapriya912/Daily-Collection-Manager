@@ -1,0 +1,324 @@
+/* Component Styles - Specific component styles */
+
+/* Toggle Switch Styles */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e0;
+  transition: .4s;
+  border-radius: 28px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: #10b981;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+/* Product Card Hover Effects */
+.product-card {
+  transition: all 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+/* Payment Schedule Scrollbar */
+.payment-schedule {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.payment-schedule::-webkit-scrollbar {
+  width: 6px;
+}
+
+.payment-schedule::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.payment-schedule::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.payment-schedule::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    height: 100vh;
+    overflow-x: hidden;
+  }
+
+  main {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    height: calc(100vh - 80px);
+  }
+
+  .flex.h-screen {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .flex-1 {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Add button text - hide on mobile */
+  #addProductBtn::after {
+    display: none;
+  }
+
+  /* Responsive table → card layout for small screens */
+  .overflow-x-auto {
+    overflow-x: visible !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #productTable {
+    -webkit-overflow-scrolling: touch;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100% !important;
+    min-width: auto !important;
+  }
+
+  #productTable thead {
+    display: none;
+  }
+
+  #productTable tbody tr {
+    display: flex;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    position: relative;
+    min-height: 120px;
+  }
+
+  #productTable tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  #productTable td {
+    display: block;
+    padding: 0;
+    border: none !important;
+    text-align: left;
+  }
+
+  /* Hide ID column */
+  #productTable td:first-child {
+    display: none;
+  }
+
+  /* Product image - left side */
+  #productTable td:nth-child(2) {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 80px;
+    height: 80px;
+    z-index: 10;
+  }
+
+  #productTable td:nth-child(2) .w-12 {
+    width: 80px;
+    height: 80px;
+    border-radius: 0.5rem;
+  }
+
+  #productTable td:nth-child(2) img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
+
+  /* Product name - right side of image */
+  #productTable td:nth-child(3) {
+    margin-left: 100px;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #1a202c;
+  }
+
+  /* Category */
+  #productTable td:nth-child(3)::after {
+    content: "Category: Electronics";
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 400;
+    margin-top: 0.125rem;
+  }
+
+  /* Price container - full width below product details */
+  #productTable td:nth-child(4) {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    font-size: medium;
+    color: #10b981;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    padding: 0.25rem 0;
+  }
+
+  /* Regular Price - left side */
+  #productTable td:nth-child(5) {
+    display: none;
+  }
+
+  /* Create two-column price layout */
+  #productTable td:nth-child(4)::after {
+    content: attr(data-regular-price);
+    color: #6b7280;
+    font-weight: 400;
+  }
+
+  /* Quantity - full width below prices */
+  #productTable td:nth-child(6) {
+    margin-left: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0;
+    color: #6b7280;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    padding: 0.25rem 0;
+  }
+
+  #productTable td:nth-child(6)::before {
+    content: "ID: P001";
+    font-weight: 500;
+    font-size: medium;
+  }
+
+  #productTable td:nth-child(6)::after {
+    content: "Quantity: 25";
+    font-weight: 500;
+    font-size: medium;
+  }
+
+  /* Action buttons - full width at bottom */
+  #productTable td:last-child {
+    border-top: 1px solid #e2e8f0;
+    width: 100%;
+  }
+
+  #productTable td:last-child .flex {
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  #productTable td:last-child button {
+    flex: 1;
+    padding: 0.25rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  #productTable td:last-child button:first-child {
+    background-color: #10b981;
+    color: white;
+  }
+
+  #productTable td:last-child button:first-child:hover {
+    background-color: #059669;
+  }
+
+  #productTable td:last-child button:first-child::before {
+    content: "Edit";
+  }
+
+  #productTable td:last-child button:nth-child(2) {
+    background-color: #3b82f6;
+    color: white;
+  }
+
+  #productTable td:last-child button:nth-child(2):hover {
+    background-color: #2563eb;
+  }
+
+  #productTable td:last-child button:nth-child(2)::before {
+    content: "Modify";
+  }
+
+  #productTable td:last-child button:last-child {
+    background-color: #ef4444;
+    color: white;
+  }
+
+  #productTable td:last-child button:last-child:hover {
+    background-color: #dc2626;
+  }
+
+  #productTable td:last-child button:last-child::before {
+    content: "Delete";
+  }
+}
+
