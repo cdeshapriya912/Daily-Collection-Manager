@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Daily Collection Manager",
+  "short_name": "DCM",
+  "description": "Money Collection App - Login and Collection Panel",
+  "start_url": "./login.php",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen"],
+  "orientation": "portrait",
+  "background_color": "#22c55e",
+  "theme_color": "#10b981",
+  "icons": [
+    { "src": "admin/img/package.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "admin/img/package.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["finance", "business"],
+  "prefer_related_applications": false
+}
+

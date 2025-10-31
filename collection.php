@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#10b981">
     <title>Collect Money</title>
     <link rel="manifest" href="manifest.webmanifest?v=10">
-    <link rel="apple-touch-icon" href="img/package.png">
+    <link rel="apple-touch-icon" href="admin/img/package.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="icon" href="img/package.png" type="image/png">
+    <link rel="icon" href="admin/img/package.png" type="image/png">
     <meta name="description" content="Simple Money Collection App">
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -71,9 +71,11 @@
     <header class="p-6 pt-12">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-white">Hello Amila !</h1>
-        <button class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-          <span class="material-icons text-gray-600">arrow_forward</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <a href="admin/logout.php" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors" title="Logout">
+            <span class="material-icons text-white">logout</span>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -191,6 +193,27 @@
             <span class="text-gray-600">Paid Amount (Rs):</span>
             <span class="text-green-600 font-bold" id="popupPaidAmount">1650.00</span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div id="installPrompt" class="fixed bottom-4 left-4 right-4 z-50 hidden">
+      <div class="bg-white rounded-xl shadow-2xl p-4 flex items-center gap-4 border border-gray-200 max-w-md mx-auto">
+        <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <span class="material-icons text-white text-2xl">get_app</span>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-bold text-gray-800 text-sm">Install App</h3>
+          <p class="text-gray-600 text-xs">Install for quick access and offline use</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="installAppBtn" class="bg-green-bright text-black px-4 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+            Install
+          </button>
+          <button id="dismissInstallBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+            <span class="material-icons text-sm">close</span>
+          </button>
         </div>
       </div>
     </div>
@@ -325,7 +348,7 @@
        */
       async function sendPaymentSMS(customer, paymentAmount) {
         try {
-          const response = await fetch('api/send-sms.php', {
+          const response = await fetch('admin/api/send-sms.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -392,6 +415,80 @@
 
       // Auto-focus search input
       document.getElementById('customerSearch').focus();
+
+      // PWA - Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js')
+            .then((registration) => {
+              console.log('[PWA] Service Worker registered:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('[PWA] Service Worker registration failed:', error);
+            });
+        });
+      }
+
+      // PWA - Install Prompt
+      let deferredPrompt;
+      const installPromptContainer = document.getElementById('installPrompt');
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        // Show our custom install prompt
+        if (installPromptContainer) {
+          installPromptContainer.classList.remove('hidden');
+        }
+      });
+
+      // Handle install button click
+      document.getElementById('installAppBtn')?.addEventListener('click', async () => {
+        if (!deferredPrompt) {
+          return;
+        }
+
+        // Show the install prompt
+        deferredPrompt.prompt();
+
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+
+        console.log(`[PWA] User response to install prompt: ${outcome}`);
+
+        // Hide our custom install prompt
+        if (installPromptContainer) {
+          installPromptContainer.classList.add('hidden');
+        }
+
+        // Clear the deferredPrompt variable
+        deferredPrompt = null;
+      });
+
+      // Hide install prompt if user dismisses it
+      document.getElementById('dismissInstallBtn')?.addEventListener('click', () => {
+        if (installPromptContainer) {
+          installPromptContainer.classList.add('hidden');
+        }
+        // Store dismissal in localStorage
+        localStorage.setItem('pwa-install-dismissed', 'true');
+      });
+
+      // Check if user already dismissed the prompt
+      if (localStorage.getItem('pwa-install-dismissed') === 'true') {
+        if (installPromptContainer) {
+          installPromptContainer.classList.add('hidden');
+        }
+      }
+
+      // Hide prompt if app is already installed (running in standalone mode)
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        if (installPromptContainer) {
+          installPromptContainer.classList.add('hidden');
+        }
+      }
     </script>
   </body>
 </html>

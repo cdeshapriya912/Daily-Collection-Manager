@@ -7,7 +7,7 @@
   // Determine if UI Kit submenu should be expanded
   $uiSubmenuExpanded = in_array($activePage, ['ui-kit']) || in_array($activeSubPage, ['ui-components']);
 ?>
-<aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-card-light border-r border-border-light transform -translate-x-full transition-transform duration-200 md:static md:translate-x-0 md:w-64 flex-shrink-0 md:transform-none">
+<aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-card-light border-r border-border-light transform -translate-x-full transition-transform duration-200 md:static md:translate-x-0 md:w-64 flex-shrink-0 md:transform-none flex flex-col">
   <div class="p-6 flex items-center gap-3">
     <div class="w-10 h-10 rounded-lg overflow-hidden">
       <img src="img/package.png" alt="Daily Collection" class="w-full h-full object-contain">
@@ -106,6 +106,14 @@
       </li>
     </ul>
   </nav>
+  
+  <!-- Logout Section -->
+  <div class="mt-auto pt-6 px-4 border-t border-border-light">
+    <a href="logout.php" class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+      <span class="material-icons">logout</span>
+      <span class="font-medium">Logout</span>
+    </a>
+  </div>
 </aside>
 
 <script>
