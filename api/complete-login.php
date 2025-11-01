@@ -78,10 +78,26 @@ try {
     unset($_SESSION['otp_expires']);
     unset($_SESSION['otp_user_id']);
     
+    // Check role and redirect accordingly
+    // role_id: 1 = admin, 2 = staff
+    $redirectUrl = 'admin/index.php';
+    $showSelection = false;
+    
+    if ((int)$role_id === 2) {
+        // Staff role - redirect directly to collection panel
+        $redirectUrl = 'collection.php';
+        $showSelection = false;
+    } else {
+        // Admin role - show panel selection
+        $showSelection = true;
+    }
+    
     echo json_encode([
         'success' => true,
         'message' => 'Login completed successfully',
-        'show_selection' => true // Indicate we need to show panel selection
+        'redirect' => $redirectUrl,
+        'show_selection' => $showSelection,
+        'role_id' => (int)$role_id
     ]);
     
 } catch (Exception $e) {

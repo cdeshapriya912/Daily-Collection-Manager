@@ -1,3 +1,10 @@
+<?php
+// Admin-only page - requires admin role
+require_once __DIR__ . '/config/admin-auth.php';
+
+// Get user information from session
+$full_name = $_SESSION['full_name'] ?? 'User';
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -53,7 +60,7 @@
                 <span class="material-icons text-text-light">person</span>
               </div>
               <div>
-                <p class="font-semibold text-heading-light" id="userName">Demo User</p>
+                <p class="font-semibold text-heading-light" id="userName"><?php echo htmlspecialchars($full_name); ?></p>
                 <p class="text-sm text-text-light">Admin</p>
               </div>
             </div>

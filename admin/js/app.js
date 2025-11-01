@@ -10,8 +10,12 @@
   const prefersDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
 
   function setUserName() {
+    // User name is now set by PHP in the HTML
+    // Only update if localStorage has a value AND the element is empty/default
     const stored = localStorage.getItem('loggedUserName');
-    userNameEl.textContent = stored && stored.trim() ? stored : 'Demo User';
+    if (userNameEl && stored && stored.trim() && userNameEl.textContent === 'User') {
+      userNameEl.textContent = stored;
+    }
   }
 
   function loadSidebarState() {

@@ -1,11 +1,11 @@
 <?php
-session_start();
+// Admin-only page - requires admin role
+// Staff users will be redirected to collection panel
+require_once __DIR__ . '/config/admin-auth.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: ../login.php');
-    exit;
-}
+// Get user information from session
+$full_name = $_SESSION['full_name'] ?? 'User';
+$username = $_SESSION['username'] ?? '';
 ?>
 <!doctype html>
 <html lang="en">
@@ -72,7 +72,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
                 <span class="material-icons text-text-light">person</span>
               </div>
               <div>
-                <p class="font-semibold text-heading-light" id="userName">Demo User</p>
+                <p class="font-semibold text-heading-light" id="userName"><?php echo htmlspecialchars($full_name); ?></p>
                 <p class="text-sm text-text-light">Admin</p>
               </div>
             </div>

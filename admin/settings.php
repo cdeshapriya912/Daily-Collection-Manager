@@ -1,3 +1,10 @@
+<?php
+// Admin-only page - requires admin role
+require_once __DIR__ . '/config/admin-auth.php';
+
+// Get user information from session
+$full_name = $_SESSION['full_name'] ?? 'User';
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -63,7 +70,7 @@
                 <span class="material-icons text-text-light">person</span>
               </div>
               <div>
-                <p class="font-semibold text-heading-light" id="userName">Demo User</p>
+                <p class="font-semibold text-heading-light" id="userName"><?php echo htmlspecialchars($full_name); ?></p>
                 <p class="text-sm text-text-light">Admin</p>
               </div>
             </div>
@@ -75,12 +82,6 @@
             <div class="flex flex-wrap">
               <button data-tab="general" class="settings-tab px-5 py-3 text-sm font-semibold text-primary bg-primary/10 border-b-2 border-primary">
                 General
-              </button>
-              <button data-tab="sms" class="settings-tab px-5 py-3 text-sm font-semibold text-text-light hover:text-primary hover:bg-primary/5">
-                SMS
-              </button>
-              <button data-tab="smtp" class="settings-tab px-5 py-3 text-sm font-semibold text-text-light hover:text-primary hover:bg-primary/5">
-                Email SMTP
               </button>
               <button data-tab="notify" class="settings-tab px-5 py-3 text-sm font-semibold text-text-light hover:text-primary hover:bg-primary/5">
                 Notifications
@@ -145,125 +146,6 @@
               <button id="saveGeneralBtn" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
                 <span class="material-icons">save</span>
                 Save General
-              </button>
-            </div>
-          </div>
-
-          <!-- SMS Settings -->
-          <div id="tab-sms" class="bg-card-light p-6 rounded-lg border border-border-light mb-6 hidden">
-            <h3 class="text-lg font-semibold text-heading-light mb-6">SMS Settings</h3>
-            <div class="space-y-6">
-              <!-- SMS Gateway -->
-              <div>
-                <label for="smsGateway" class="block text-sm font-medium text-heading-light mb-2">SMS Gateway Provider</label>
-                <div class="custom-select-wrapper relative">
-                  <select 
-                    id="smsGateway" 
-                    class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white cursor-pointer hover:border-primary/50 transition-colors"
-                  >
-                    <option value="textlk" selected>Text.lk</option>
-                    <option value="dialog">Dialog</option>
-                    <option value="mobitel">Mobitel</option>
-                    <option value="custom">Custom API</option>
-                  </select>
-                  <span class="select-arrow material-icons">expand_more</span>
-                </div>
-              </div>
-
-              <!-- Sender ID -->
-              <div>
-                <label for="senderId" class="block text-sm font-medium text-heading-light mb-2">Sender ID</label>
-                <input 
-                  type="text" 
-                  id="senderId" 
-                  value="SahanaLK"
-                  maxlength="11"
-                  class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                  placeholder="Max 11 characters"
-                >
-                <p class="text-xs text-text-light mt-1">Maximum 11 alphanumeric characters</p>
-              </div>
-
-              <!-- Enable SMS Notifications -->
-              <div class="flex items-center justify-between py-3">
-                <div>
-                  <label for="enableSMS" class="block text-sm font-medium text-heading-light">Enable SMS Notifications</label>
-                  <p class="text-xs text-text-light mt-1">Send SMS notifications for payments and orders</p>
-                </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="enableSMS" checked>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-
-              <!-- Test Mode -->
-              <div class="flex items-center justify-between py-3">
-                <div>
-                  <label for="testMode" class="block text-sm font-medium text-heading-light">Test Mode</label>
-                  <p class="text-xs text-text-light mt-1">Send SMS to test number instead of customers</p>
-                </div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="testMode">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-            <div class="mt-6 flex items-center justify-end gap-4">
-              <button id="saveSMSBtn" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
-                <span class="material-icons">save</span>
-                Save SMS
-              </button>
-            </div>
-          </div>
-
-          <!-- Email SMTP Settings -->
-          <div id="tab-smtp" class="bg-card-light p-6 rounded-lg border border-border-light mb-6 hidden">
-            <h3 class="text-lg font-semibold text-heading-light mb-6">Email SMTP Settings</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label for="smtpHost" class="block text-sm font-medium text-heading-light mb-2">SMTP Host</label>
-                <input type="text" id="smtpHost" placeholder="smtp.example.com" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <label for="smtpPort" class="block text-sm font-medium text-heading-light mb-2">SMTP Port</label>
-                <input type="number" id="smtpPort" placeholder="587" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <label for="smtpEncryption" class="block text-sm font-medium text-heading-light mb-2">Encryption</label>
-                <div class="custom-select-wrapper relative">
-                  <select id="smtpEncryption" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white cursor-pointer hover:border-primary/50 transition-colors">
-                    <option value="tls" selected>TLS</option>
-                    <option value="ssl">SSL</option>
-                    <option value="none">None</option>
-                  </select>
-                  <span class="select-arrow material-icons">expand_more</span>
-                </div>
-              </div>
-              <div>
-                <label for="smtpUser" class="block text-sm font-medium text-heading-light mb-2">SMTP Username</label>
-                <input type="text" id="smtpUser" placeholder="user@example.com" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <label for="smtpPass" class="block text-sm font-medium text-heading-light mb-2">SMTP Password</label>
-                <input type="password" id="smtpPass" placeholder="••••••••" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <label for="smtpFromEmail" class="block text-sm font-medium text-heading-light mb-2">From Email</label>
-                <input type="email" id="smtpFromEmail" placeholder="noreply@example.com" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <label for="smtpFromName" class="block text-sm font-medium text-heading-light mb-2">From Name</label>
-                <input type="text" id="smtpFromName" placeholder="Daily Collection" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-            </div>
-            <div class="mt-6 flex items-center justify-between">
-              <button id="sendTestEmail" class="px-5 py-2 border border-border-light rounded-lg text-text-light hover:bg-gray-50 transition-colors flex items-center gap-2">
-                <span class="material-icons text-lg">mail</span>
-                Send Test Email
-              </button>
-              <button id="saveSMTPBtn" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
-                <span class="material-icons">save</span>
-                Save SMTP
               </button>
             </div>
           </div>
@@ -481,6 +363,62 @@
       // Init default tab
       setActiveTab('general');
 
+      // Load settings from database when page loads
+      async function loadSettings() {
+        try {
+          // Load all settings
+          const response = await fetch('api/get-settings.php?category=all');
+          const result = await response.json();
+          
+          if (result.success && result.settings) {
+            const settings = result.settings;
+            
+            // Load General settings
+            if (settings.company_name) document.getElementById('companyName').value = settings.company_name;
+            if (settings.company_email) document.getElementById('companyEmail').value = settings.company_email;
+            if (settings.company_phone) document.getElementById('companyPhone').value = settings.company_phone;
+            if (settings.company_address) document.getElementById('companyAddress').value = settings.company_address;
+            
+            // Load Notification settings
+            if (settings.email_notifications !== undefined) document.getElementById('emailNotifications').checked = settings.email_notifications;
+            if (settings.payment_reminders !== undefined) document.getElementById('paymentReminders').checked = settings.payment_reminders;
+            if (settings.low_stock_alerts !== undefined) document.getElementById('lowStockAlerts').checked = settings.low_stock_alerts;
+            
+            // Load System settings
+            if (settings.currency) document.getElementById('currency').value = settings.currency;
+            if (settings.date_format) document.getElementById('dateFormat').value = settings.date_format;
+            if (settings.timezone) document.getElementById('timezone').value = settings.timezone;
+          }
+        } catch (error) {
+          console.error('Failed to load settings:', error);
+        }
+      }
+
+      // Load settings when page loads
+      loadSettings();
+
+      // Notification function
+      function showNotification(message, type = 'success') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 ${
+          type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.innerHTML = `
+          <span class="material-icons">${type === 'success' ? 'check_circle' : 'error'}</span>
+          <span>${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.style.transition = 'opacity 0.3s';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
       // Section-specific save handlers
       document.getElementById('saveGeneralBtn').addEventListener('click', function() {
         const payload = {
@@ -493,49 +431,82 @@
         alert('General settings saved');
       });
 
-      document.getElementById('saveSMSBtn').addEventListener('click', function() {
+      document.getElementById('saveNotifyBtn').addEventListener('click', async function() {
+        const saveBtn = document.getElementById('saveNotifyBtn');
+        const originalText = saveBtn.innerHTML;
+        
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-icons animate-spin">hourglass_empty</span> Saving...';
+        
         const payload = {
-          smsGateway: document.getElementById('smsGateway').value,
-          senderId: document.getElementById('senderId').value,
-          enableSMS: document.getElementById('enableSMS').checked,
-          testMode: document.getElementById('testMode').checked
-        };
-        console.log('Save SMS:', payload);
-        alert('SMS settings saved');
-      });
-
-      document.getElementById('saveSMTPBtn').addEventListener('click', function() {
-        const payload = {
-          host: document.getElementById('smtpHost').value,
-          port: parseInt(document.getElementById('smtpPort').value || '0', 10),
-          encryption: document.getElementById('smtpEncryption').value,
-          username: document.getElementById('smtpUser').value,
-          password: document.getElementById('smtpPass').value,
-          fromEmail: document.getElementById('smtpFromEmail').value,
-          fromName: document.getElementById('smtpFromName').value
-        };
-        console.log('Save SMTP:', payload);
-        alert('SMTP settings saved');
-      });
-
-      document.getElementById('saveNotifyBtn').addEventListener('click', function() {
-        const payload = {
+          category: 'notifications',
           emailNotifications: document.getElementById('emailNotifications').checked,
           paymentReminders: document.getElementById('paymentReminders').checked,
           lowStockAlerts: document.getElementById('lowStockAlerts').checked
         };
-        console.log('Save Notifications:', payload);
-        alert('Notification settings saved');
+        
+        try {
+          const response = await fetch('api/save-settings.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification('Notification settings saved successfully!', 'success');
+          } else {
+            showNotification(result.error || 'Failed to save notification settings', 'error');
+          }
+        } catch (error) {
+          console.error('Save Notifications error:', error);
+          showNotification('Network error. Please try again.', 'error');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+        }
       });
 
-      document.getElementById('saveSystemBtn').addEventListener('click', function() {
+      document.getElementById('saveSystemBtn').addEventListener('click', async function() {
+        const saveBtn = document.getElementById('saveSystemBtn');
+        const originalText = saveBtn.innerHTML;
+        
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-icons animate-spin">hourglass_empty</span> Saving...';
+        
         const payload = {
+          category: 'system',
           currency: document.getElementById('currency').value,
           dateFormat: document.getElementById('dateFormat').value,
           timezone: document.getElementById('timezone').value
         };
-        console.log('Save System:', payload);
-        alert('System settings saved');
+        
+        try {
+          const response = await fetch('api/save-settings.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification('System settings saved successfully!', 'success');
+          } else {
+            showNotification(result.error || 'Failed to save system settings', 'error');
+          }
+        } catch (error) {
+          console.error('Save System error:', error);
+          showNotification('Network error. Please try again.', 'error');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+        }
       });
 
       // Backup Now button
@@ -547,24 +518,6 @@
         }
       });
 
-      // Send test email
-      document.getElementById('sendTestEmail').addEventListener('click', function(e) {
-        e.preventDefault();
-        const to = prompt('Enter an email address to send a test email:');
-        if (!to) return;
-        const smtp = {
-          host: document.getElementById('smtpHost').value,
-          port: parseInt(document.getElementById('smtpPort').value || '0', 10),
-          encryption: document.getElementById('smtpEncryption').value,
-          username: document.getElementById('smtpUser').value,
-          password: document.getElementById('smtpPass').value,
-          fromEmail: document.getElementById('smtpFromEmail').value,
-          fromName: document.getElementById('smtpFromName').value,
-          to
-        };
-        console.log('Send test email with config:', smtp);
-        alert('Test email request queued (mock). Integrate backend to actually send.');
-      });
     </script>
   </body>
 </html>

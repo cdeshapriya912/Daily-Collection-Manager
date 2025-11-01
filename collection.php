@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+
+// Get user's full name
+$full_name = $_SESSION['full_name'] ?? 'User';
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -70,7 +82,7 @@
     <!-- Header -->
     <header class="p-6 pt-12">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-white">Hello Amila !</h1>
+        <h1 class="text-2xl font-bold text-white">Hello <?php echo htmlspecialchars($full_name); ?> !</h1>
         <div class="flex items-center gap-2">
           <a href="admin/logout.php" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors" title="Logout">
             <span class="material-icons text-white">logout</span>

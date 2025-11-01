@@ -1,3 +1,10 @@
+<?php
+// Admin-only page - requires admin role
+require_once __DIR__ . '/config/admin-auth.php';
+
+// Get user information from session
+$full_name = $_SESSION['full_name'] ?? 'User';
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -50,32 +57,60 @@
                 <span class="material-icons text-text-light">person</span>
               </div>
               <div>
-                <p class="font-semibold text-heading-light" id="userName">Demo User</p>
+                <p class="font-semibold text-heading-light" id="userName"><?php echo htmlspecialchars($full_name); ?></p>
                 <p class="text-sm text-text-light">Admin</p>
               </div>
             </div>
           </div>
         </header>
         <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
-          <!-- Add Category Form -->
+          <!-- Search and Add Section -->
           <div class="bg-card-light p-6 rounded-lg border border-border-light mb-6">
-            <h3 class="text-lg font-semibold text-heading-light mb-4">Add New Category</h3>
-            <form id="categoryForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-              <div>
-                <label for="categoryName" class="block text-sm font-medium text-heading-light mb-2">Category Name *</label>
-                <input type="text" id="categoryName" required placeholder="Enter category name" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <label for="categoryDescription" class="block text-sm font-medium text-heading-light mb-2">Description</label>
-                <input type="text" id="categoryDescription" placeholder="Enter description" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
-              </div>
-              <div>
-                <button type="submit" class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-                  <span class="material-icons">add</span>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-heading-light">Manage Categories</h3>
+              <div class="flex items-center gap-2">
+                <button 
+                  id="refreshBtn" 
+                  class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 font-medium"
+                  title="Refresh category list"
+                >
+                  <span class="material-icons text-lg">refresh</span>
+                  Refresh
+                </button>
+                <button 
+                  id="addCategoryBtn" 
+                  class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 font-medium"
+                >
+                  <span class="material-icons text-lg">add</span>
                   Add Category
                 </button>
               </div>
-            </form>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <div class="flex-1">
+                <label for="searchInput" class="block text-sm font-medium text-text-light mb-2">Search Categories</label>
+                <div class="relative">
+                  <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search by category name or description..." 
+                    class="w-full px-4 py-3 pl-10 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  >
+                  <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-light">
+                    <span class="material-icons text-lg">search</span>
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-end">
+                <button 
+                  id="searchBtn" 
+                  class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 font-medium"
+                >
+                  <span class="material-icons text-lg">search</span>
+                  Search
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Category Table -->
@@ -83,95 +118,27 @@
             <div class="p-6">
               <h3 class="text-lg font-semibold text-heading-light mb-4">All Categories</h3>
               <div class="overflow-x-auto">
-                <table class="w-full">
+                <table class="w-full" id="categoryTable">
                   <thead>
                     <tr class="border-b border-border-light">
-                      <th class="text-left py-3 px-4 font-semibold text-heading-light">ID</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Category Name</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Description</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Products</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Action</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">CAT001</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Electronics</td>
-                      <td class="py-3 px-4 text-text-light">Electronic devices and gadgets</td>
-                      <td class="py-3 px-4 text-primary font-semibold">15</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
+                  <tbody id="categoryTableBody">
+                    <tr id="loadingRow">
+                      <td colspan="4" class="py-8 text-center text-text-light">
+                        <div class="flex flex-col items-center justify-center gap-2">
+                          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          <span>Loading categories...</span>
                         </div>
                       </td>
                     </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">CAT002</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Accessories</td>
-                      <td class="py-3 px-4 text-text-light">Tech accessories and peripherals</td>
-                      <td class="py-3 px-4 text-primary font-semibold">8</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">CAT003</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Cables</td>
-                      <td class="py-3 px-4 text-text-light">Various types of cables and adapters</td>
-                      <td class="py-3 px-4 text-primary font-semibold">12</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">CAT004</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Furniture</td>
-                      <td class="py-3 px-4 text-text-light">Office and home furniture items</td>
-                      <td class="py-3 px-4 text-primary font-semibold">6</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">CAT005</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Clothing</td>
-                      <td class="py-3 px-4 text-text-light">Apparel and fashion items</td>
-                      <td class="py-3 px-4 text-primary font-semibold">20</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
+                    <tr id="emptyRow" class="hidden">
+                      <td colspan="4" class="py-8 text-center text-text-light">
+                        No categories found.
                       </td>
                     </tr>
                   </tbody>
@@ -183,7 +150,71 @@
       </div>
       <div id="sidebarBackdrop" class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"></div>
     </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div id="categoryModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+      <div class="modal-backdrop absolute inset-0" id="modalBackdrop"></div>
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative z-10">
+        <div class="p-6 border-b border-border-light">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-heading-light" id="modalTitle">Add Category</h3>
+            <button id="closeModal" class="text-text-light hover:text-heading-light transition-colors">
+              <span class="material-icons">close</span>
+            </button>
+          </div>
+        </div>
+        <form id="categoryForm" class="p-6 space-y-4">
+          <input type="hidden" id="categoryId" name="id">
+          
+          <div>
+            <label for="categoryName" class="block text-sm font-medium text-heading-light mb-2">Category Name *</label>
+            <input 
+              type="text" 
+              id="categoryName" 
+              name="name"
+              required
+              class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              placeholder="Enter category name"
+            >
+          </div>
+          
+          <div>
+            <label for="categoryDescription" class="block text-sm font-medium text-heading-light mb-2">Description</label>
+            <textarea 
+              id="categoryDescription" 
+              name="description"
+              rows="3"
+              class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              placeholder="Enter category description"
+            ></textarea>
+          </div>
+          
+          <div class="flex items-center justify-end gap-4 pt-4 border-t border-border-light">
+            <button 
+              type="button" 
+              id="cancelBtn"
+              class="px-6 py-3 border border-border-light rounded-lg text-text-light hover:bg-gray-50 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              id="saveCategoryBtn"
+              class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center gap-2"
+            >
+              <span class="material-icons text-lg">save</span>
+              <span id="saveBtnText">Add Category</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <button id="installBtn" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-3 rounded-lg shadow-lg hidden">Install app</button>
+    
+    <!-- Custom Confirmation Dialog Module -->
+    <script src="assets/js/confirmation-dialog.js?v=<?php echo time(); ?>"></script>
+    
     <script src="js/app.js?v=15" defer></script>
     <script>
       // Sidebar toggle functionality
@@ -214,22 +245,304 @@
         sidebarToggle.setAttribute('aria-expanded', 'false');
       });
 
-      // Close sidebar when clicking outside on mobile
-      document.addEventListener('click', function(event) {
-        if (window.innerWidth < 768) {
-          const isSidebarOpen = sidebarToggle.getAttribute('aria-expanded') === 'true';
-          const isClickInsideSidebar = mobileSidebar.contains(event.target);
-          const isClickOnToggle = sidebarToggle.contains(event.target);
+      // Category Management Variables
+      let currentEditCategoryId = null;
+
+      // Force refresh table with fresh database data
+      async function refreshCategoryTable(search = '') {
+        console.log('🔄 Force refreshing category table...');
+        
+        const tbody = document.getElementById('categoryTableBody');
+        const loadingRow = document.getElementById('loadingRow');
+        
+        if (loadingRow) loadingRow.classList.remove('hidden');
+        if (tbody) {
+          const allRows = Array.from(tbody.querySelectorAll('tr'));
+          allRows.forEach(row => {
+            if (row.id !== 'loadingRow' && row.id !== 'emptyRow') row.remove();
+          });
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 150));
+        await loadCategories(search, true);
+        console.log('✅ Table refreshed');
+      }
+
+      // Load categories
+      async function loadCategories(search = '', bustCache = false) {
+        try {
+          const params = new URLSearchParams();
+          if (search) params.append('search', search);
+          params.append('_t', Date.now());
+          params.append('_r', Math.random());
           
-          if (isSidebarOpen && !isClickInsideSidebar && !isClickOnToggle) {
-            mobileSidebar.classList.add('-translate-x-full');
-            sidebarBackdrop.classList.add('hidden');
-            sidebarToggle.setAttribute('aria-expanded', 'false');
+          const url = `api/get-categories.php?${params.toString()}`;
+          
+          const tbody = document.getElementById('categoryTableBody');
+          const loadingRow = document.getElementById('loadingRow');
+          const emptyRow = document.getElementById('emptyRow');
+          
+          if (!tbody) return;
+          
+          if (loadingRow) loadingRow.classList.remove('hidden');
+          if (emptyRow) emptyRow.classList.add('hidden');
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+          });
+          
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          
+          const result = await response.json();
+          
+          if (loadingRow) loadingRow.classList.add('hidden');
+          
+          const allRows = Array.from(tbody.querySelectorAll('tr'));
+          allRows.forEach(row => {
+            if (row.id !== 'loadingRow' && row.id !== 'emptyRow') row.remove();
+          });
+          
+          if (result.success && result.categories && result.categories.length > 0) {
+            if (emptyRow) emptyRow.classList.add('hidden');
+            result.categories.forEach((category) => {
+              const row = createCategoryRow(category);
+              if (row) tbody.appendChild(row);
+            });
+          } else {
+            if (emptyRow) emptyRow.classList.remove('hidden');
           }
+        } catch (error) {
+          console.error('Failed to load categories:', error);
+          showNotification('Failed to load categories: ' + error.message, 'error');
+        }
+      }
+
+      // Create category row
+      function createCategoryRow(category) {
+        if (!category || !category.id) return null;
+        
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-border-light hover:bg-gray-50';
+        tr.dataset.categoryId = category.id;
+        
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-heading-light font-medium">${escapeHtml(category.name)}</td>
+          <td class="py-3 px-4 text-text-light">${escapeHtml(category.description || '-')}</td>
+          <td class="py-3 px-4 text-primary font-semibold">${category.product_count || 0}</td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <button class="edit-category-btn text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit" data-category-id="${category.id}">
+                <span class="material-icons text-lg">edit</span>
+              </button>
+              <button class="delete-category-btn text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete" data-category-id="${category.id}">
+                <span class="material-icons text-lg">delete</span>
+              </button>
+            </div>
+          </td>
+        `;
+        
+        const editBtn = tr.querySelector('.edit-category-btn');
+        const deleteBtn = tr.querySelector('.delete-category-btn');
+        
+        if (editBtn) editBtn.addEventListener('click', () => editCategory(category.id));
+        if (deleteBtn) deleteBtn.addEventListener('click', () => deleteCategory(category.id));
+        
+        return tr;
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 ${
+          type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.innerHTML = `
+          <span class="material-icons">${type === 'success' ? 'check_circle' : 'error'}</span>
+          <span>${escapeHtml(message)}</span>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          notification.style.transition = 'opacity 0.3s';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', async function() {
+          const search = document.getElementById('searchInput').value.trim();
+          refreshBtn.disabled = true;
+          const originalHTML = refreshBtn.innerHTML;
+          refreshBtn.innerHTML = '<span class="material-icons text-lg animate-spin">refresh</span> Refreshing...';
+          try {
+            await refreshCategoryTable(search);
+          } finally {
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = originalHTML;
+          }
+        });
+      }
+
+      const addCategoryBtn = document.getElementById('addCategoryBtn');
+      if (addCategoryBtn) {
+        addCategoryBtn.addEventListener('click', () => openAddModal());
+      }
+
+      document.getElementById('searchBtn').addEventListener('click', async function() {
+        const search = document.getElementById('searchInput').value.trim();
+        await refreshCategoryTable(search);
+      });
+
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') document.getElementById('searchBtn').click();
+      });
+
+      async function editCategory(categoryId) {
+        try {
+          const url = `api/get-categories.php?_t=${Date.now()}&_r=${Math.random()}`;
+          const response = await fetch(url, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+          });
+          const result = await response.json();
+          
+          if (result.success) {
+            const category = result.categories.find(c => c.id == categoryId);
+            if (category) openEditModal(category);
+          }
+        } catch (error) {
+          console.error('Failed to load category:', error);
+          showNotification('Failed to load category details', 'error');
+        }
+      }
+
+      async function deleteCategory(categoryId) {
+        const confirmed = await showConfirmDialog({
+          title: 'Delete Category?',
+          message: 'Are you sure you want to delete this category? This action cannot be undone.',
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+          type: 'danger'
+        });
+        
+        if (!confirmed) return;
+        
+        try {
+          const response = await fetch('api/delete-category.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: categoryId })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification('Category deleted successfully', 'success');
+            const search = document.getElementById('searchInput').value.trim();
+            await refreshCategoryTable(search);
+          } else {
+            showNotification(result.error || 'Failed to delete category', 'error');
+          }
+        } catch (error) {
+          console.error('Delete error:', error);
+          showNotification('Network error. Please try again.', 'error');
+        }
+      }
+
+      function openAddModal() {
+        currentEditCategoryId = null;
+        document.getElementById('modalTitle').textContent = 'Add Category';
+        document.getElementById('saveBtnText').textContent = 'Add Category';
+        document.getElementById('categoryForm').reset();
+        document.getElementById('categoryId').value = '';
+        document.getElementById('categoryModal').classList.remove('hidden');
+      }
+
+      function openEditModal(category) {
+        currentEditCategoryId = category.id;
+        document.getElementById('modalTitle').textContent = 'Edit Category';
+        document.getElementById('saveBtnText').textContent = 'Update Category';
+        document.getElementById('categoryId').value = category.id;
+        document.getElementById('categoryName').value = category.name;
+        document.getElementById('categoryDescription').value = category.description || '';
+        document.getElementById('categoryModal').classList.remove('hidden');
+      }
+
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+      document.getElementById('cancelBtn').addEventListener('click', closeModal);
+      document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+      
+      function closeModal() {
+        document.getElementById('categoryModal').classList.add('hidden');
+        document.getElementById('categoryForm').reset();
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('categoryModal').classList.contains('hidden')) {
+          closeModal();
         }
       });
+
+      document.getElementById('categoryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const saveBtn = document.getElementById('saveCategoryBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="material-icons animate-spin">hourglass_empty</span> Saving...';
+        
+        const formData = {
+          id: document.getElementById('categoryId').value || null,
+          name: document.getElementById('categoryName').value.trim(),
+          description: document.getElementById('categoryDescription').value.trim()
+        };
+        
+        try {
+          const endpoint = currentEditCategoryId ? 'api/update-category.php' : 'api/add-category.php';
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification(result.message || 'Category saved successfully', 'success');
+            closeModal();
+            const search = document.getElementById('searchInput').value.trim();
+            await refreshCategoryTable(search);
+          } else {
+            showNotification(result.error || 'Failed to save category', 'error');
+          }
+        } catch (error) {
+          console.error('Save error:', error);
+          showNotification('Network error. Please try again.', 'error');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+        }
+      });
+
+      async function initializePage() {
+        console.log('🔄 Initializing category page...');
+        await refreshCategoryTable('');
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializePage);
+      } else {
+        initializePage();
+      }
     </script>
   </body>
 </html>
-
-

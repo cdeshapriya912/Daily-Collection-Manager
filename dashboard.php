@@ -1,3 +1,30 @@
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+
+// Get user information
+$full_name = $_SESSION['full_name'] ?? 'User';
+$role_id = $_SESSION['role_id'] ?? 0;
+
+// Get role name from database
+require_once __DIR__ . '/admin/config/db.php';
+$role_name = 'User';
+try {
+    $stmt = $pdo->prepare("SELECT name FROM roles WHERE id = ?");
+    $stmt->execute([$role_id]);
+    $role = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($role) {
+        $role_name = $role['name'];
+    }
+} catch (Exception $e) {
+    error_log('Error fetching role: ' . $e->getMessage());
+}
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -72,6 +99,20 @@
       <div class="w-full max-w-md">
         <!-- Header -->
         <div class="text-center mb-8">
+          <!-- User Profile -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/20">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                <span class="material-icons text-green-600 text-3xl">account_circle</span>
+              </div>
+              <div class="text-left flex-1">
+                <h2 class="text-xl font-bold text-white"><?php echo htmlspecialchars($full_name); ?></h2>
+                <p class="text-white/80 text-sm"><?php echo htmlspecialchars($role_name); ?></p>
+              </div>
+              <span class="material-icons text-white/40 text-2xl">notifications</span>
+            </div>
+          </div>
+          
           <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <img src="img/package.png" alt="Logo" class="w-12 h-12 object-contain">
           </div>
@@ -130,14 +171,14 @@
     </main>
 
     <script>
-      // Check if OTP is verified
-      <?php
-      session_start();
-      if (!isset($_SESSION['otp_verified']) || !$_SESSION['otp_verified']) {
-        echo "window.location.href = 'login.php';";
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('Service Worker registered'))
+          .catch(err => console.log('Service Worker registration failed'));
       }
-      ?>
     </script>
   </body>
 </html>
+
 

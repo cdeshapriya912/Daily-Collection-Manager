@@ -4,8 +4,6 @@
   
   // Determine if product submenu should be expanded
   $productSubmenuExpanded = in_array($activePage, ['product', 'add-product', 'category']) || in_array($activeSubPage, ['product-list', 'add-product', 'category']);
-  // Determine if UI Kit submenu should be expanded
-  $uiSubmenuExpanded = in_array($activePage, ['ui-kit']) || in_array($activeSubPage, ['ui-components']);
 ?>
 <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-card-light border-r border-border-light transform -translate-x-full transition-transform duration-200 md:static md:translate-x-0 md:w-64 flex-shrink-0 md:transform-none flex flex-col">
   <div class="p-6 flex items-center gap-3">
@@ -82,23 +80,6 @@
         </a>
       </li>
       <li class="mt-2">
-        <button id="uiMenuToggle" class="w-full flex items-center justify-between px-4 py-3 <?php echo $uiSubmenuExpanded ? 'text-primary bg-primary/10 rounded-lg font-semibold' : 'text-text-light hover:bg-gray-100 rounded-lg'; ?>">
-          <div class="flex items-center gap-3">
-            <span class="material-icons">widgets</span>
-            UI Kit
-          </div>
-          <span class="material-icons transform transition-transform <?php echo $uiSubmenuExpanded ? 'rotate-180' : ''; ?>" id="uiMenuIcon">expand_more</span>
-        </button>
-        <ul id="uiSubmenu" class="ml-6 mt-2 space-y-1 <?php echo $uiSubmenuExpanded ? '' : 'hidden'; ?>">
-          <li>
-            <a href="ui-kit.php" class="flex items-center gap-2 px-4 py-2 text-sm <?php echo ($activePage === 'ui-kit') ? 'bg-primary/10 text-primary rounded-lg font-medium' : 'text-text-light hover:bg-gray-100 rounded-lg'; ?>">
-              <span class="material-icons text-sm">view_quilt</span>
-              Components
-            </a>
-          </li>
-        </ul>
-      </li>
-      <li class="mt-2">
         <a href="settings.php" class="flex items-center gap-3 px-4 py-3 <?php echo $activePage === 'settings' ? 'bg-primary/10 text-primary rounded-lg font-semibold' : 'text-text-light hover:bg-gray-100 rounded-lg'; ?>">
           <span class="material-icons">settings</span>
           Settings
@@ -124,17 +105,6 @@
       productMenuToggle.addEventListener('click', function() {
         const submenu = document.getElementById('productSubmenu');
         const icon = document.getElementById('productMenuIcon');
-        if (submenu && icon) {
-          submenu.classList.toggle('hidden');
-          icon.classList.toggle('rotate-180');
-        }
-      });
-    }
-    const uiMenuToggle = document.getElementById('uiMenuToggle');
-    if (uiMenuToggle) {
-      uiMenuToggle.addEventListener('click', function() {
-        const submenu = document.getElementById('uiSubmenu');
-        const icon = document.getElementById('uiMenuIcon');
         if (submenu && icon) {
           submenu.classList.toggle('hidden');
           icon.classList.toggle('rotate-180');

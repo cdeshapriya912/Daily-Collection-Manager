@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Confirmation Dialog - Test Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h1 class="text-3xl font-bold mb-2">Custom Confirmation Dialog</h1>
+            <p class="text-gray-600 mb-8">Test the beautiful confirmation dialog in different types</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Danger Type -->
+                <div class="border border-red-200 rounded-lg p-6 bg-red-50">
+                    <h3 class="text-lg font-semibold text-red-900 mb-2 flex items-center gap-2">
+                        <span class="material-icons">error_outline</span>
+                        Danger Type
+                    </h3>
+                    <p class="text-red-700 mb-4 text-sm">For destructive actions like delete</p>
+                    <button 
+                        onclick="testDanger()"
+                        class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-semibold"
+                    >
+                        Test Danger Dialog
+                    </button>
+                </div>
+                
+                <!-- Warning Type -->
+                <div class="border border-amber-200 rounded-lg p-6 bg-amber-50">
+                    <h3 class="text-lg font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <span class="material-icons">warning</span>
+                        Warning Type
+                    </h3>
+                    <p class="text-amber-700 mb-4 text-sm">For actions that need caution</p>
+                    <button 
+                        onclick="testWarning()"
+                        class="w-full bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors font-semibold"
+                    >
+                        Test Warning Dialog
+                    </button>
+                </div>
+                
+                <!-- Info Type -->
+                <div class="border border-blue-200 rounded-lg p-6 bg-blue-50">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                        <span class="material-icons">info</span>
+                        Info Type
+                    </h3>
+                    <p class="text-blue-700 mb-4 text-sm">For informational confirmations</p>
+                    <button 
+                        onclick="testInfo()"
+                        class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                    >
+                        Test Info Dialog
+                    </button>
+                </div>
+                
+                <!-- Success Type -->
+                <div class="border border-green-200 rounded-lg p-6 bg-green-50">
+                    <h3 class="text-lg font-semibold text-green-900 mb-2 flex items-center gap-2">
+                        <span class="material-icons">check_circle</span>
+                        Success Type
+                    </h3>
+                    <p class="text-green-700 mb-4 text-sm">For positive confirmations</p>
+                    <button 
+                        onclick="testSuccess()"
+                        class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                    >
+                        Test Success Dialog
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Result Display -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 class="font-semibold mb-2">Result:</h3>
+                <p id="result" class="text-gray-700">Click any button above to test the dialogs</p>
+            </div>
+            
+            <!-- Code Example -->
+            <div class="mt-8">
+                <h3 class="font-semibold mb-4 text-lg">Code Example:</h3>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"><code>async function testDelete() {
+  const confirmed = await showConfirmDialog({
+    title: 'Delete Item?',
+    message: 'This action cannot be undone.',
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+    type: 'danger'
+  });
+  
+  if (confirmed) {
+    console.log('User confirmed!');
+    // Proceed with deletion
+  } else {
+    console.log('User cancelled');
+  }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include the confirmation dialog module -->
+    <script src="assets/js/confirmation-dialog.js"></script>
+    
+    <script>
+        // Test functions for each type
+        async function testDanger() {
+            const confirmed = await showConfirmDialog({
+                title: 'Delete Staff Member?',
+                message: 'Are you sure you want to delete this staff member? This action cannot be undone.',
+                confirmText: 'Delete',
+                cancelText: 'Cancel',
+                type: 'danger'
+            });
+            
+            showResult(confirmed, 'Danger');
+        }
+        
+        async function testWarning() {
+            const confirmed = await showConfirmDialog({
+                title: 'Unsaved Changes',
+                message: 'You have unsaved changes. Do you want to leave without saving?',
+                confirmText: 'Leave',
+                cancelText: 'Stay',
+                type: 'warning'
+            });
+            
+            showResult(confirmed, 'Warning');
+        }
+        
+        async function testInfo() {
+            const confirmed = await showConfirmDialog({
+                title: 'Send Email Notification?',
+                message: 'This will send an email notification to all users. Do you want to proceed?',
+                confirmText: 'Send',
+                cancelText: 'Cancel',
+                type: 'info'
+            });
+            
+            showResult(confirmed, 'Info');
+        }
+        
+        async function testSuccess() {
+            const confirmed = await showConfirmDialog({
+                title: 'Approve Request?',
+                message: 'This will approve the request and notify the user. Continue?',
+                confirmText: 'Approve',
+                cancelText: 'Cancel',
+                type: 'success'
+            });
+            
+            showResult(confirmed, 'Success');
+        }
+        
+        function showResult(confirmed, type) {
+            const resultEl = document.getElementById('result');
+            const action = confirmed ? '✅ CONFIRMED' : '❌ CANCELLED';
+            const timestamp = new Date().toLocaleTimeString();
+            
+            resultEl.innerHTML = `
+                <strong>${type} Dialog:</strong> ${action}
+                <span class="text-gray-500 ml-2">(${timestamp})</span>
+            `;
+            
+            console.log(`${type} dialog result:`, confirmed);
+        }
+    </script>
+</body>
+</html>
+
+
+

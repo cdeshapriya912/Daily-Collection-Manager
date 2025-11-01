@@ -1,4 +1,13 @@
 <?php
+/**
+ * Login Page
+ * 
+ * DEVELOPER MODE: To enable/disable OTP auto-fill feature,
+ * search for "DEVELOPER_MODE" in the JavaScript section below (around line 782)
+ * Set DEVELOPER_MODE = true for development
+ * Set DEVELOPER_MODE = false for production
+ */
+
 // Start output buffering FIRST to catch any warnings/errors
 ob_start();
 
@@ -133,10 +142,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
                         setcookie('remember_user', $user['username'], time() + (30 * 24 * 60 * 60), '/', '', false, true);
                     }
                     
+                    // Check role and redirect accordingly
+                    // role_id: 1 = admin, 2 = staff
+                    $redirectUrl = 'admin/index.php';
+                    $showSelection = false;
+                    
+                    if ((int)$user['role_id'] === 2) {
+                        // Staff role - redirect directly to collection panel
+                        $redirectUrl = 'collection.php';
+                        $showSelection = false;
+                    } else {
+                        // Admin role - show panel selection
+                        $showSelection = true;
+                    }
+                    
                     $response = [
                         'success' => true,
                         'message' => 'Login successful',
-                        'redirect' => 'admin/index.php',
+                        'redirect' => $redirectUrl,
+                        'show_selection' => $showSelection,
+                        'role_id' => (int)$user['role_id'],
                         'session_verified' => true
                     ];
                 } else {
@@ -324,7 +349,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
 if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     ob_end_clean();
     
-    // Check for saved panel preference (set via cookie or session)
+    // Check user role
+    $roleId = isset($_SESSION['role_id']) ? (int)$_SESSION['role_id'] : 1;
+    
+    // If staff role (role_id = 2), always redirect to collection.php
+    if ($roleId === 2) {
+        header('Location: collection.php');
+        exit;
+    }
+    
+    // For admin users, check for saved panel preference
     $savedPanel = null;
     
     // Check cookie first (persists across sessions)
@@ -340,7 +374,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     if ($savedPanel && in_array($savedPanel, ['admin/index.php', 'collection.php'])) {
         header('Location: ' . $savedPanel);
     } else {
-        // Default to admin dashboard
+        // Default to admin dashboard for admin users
         header('Location: admin/index.php');
     }
     exit;
@@ -637,6 +671,15 @@ ob_end_flush();
               </p>
             </div>
 
+            <!-- Testing Mode Message -->
+            <div id="otpAutoFilledMessage" class="hidden">
+              <div class="bg-green-100 border-2 border-green-400 rounded-lg p-3 text-center">
+                <p class="text-green-800 text-sm font-bold">
+                  ✓ OTP Code Auto-Filled! Just click "Verify OTP" below
+                </p>
+              </div>
+            </div>
+
             <!-- Verify Button -->
             <button 
               type="submit"
@@ -741,6 +784,22 @@ ob_end_flush();
     </div>
 
     <script>
+      // ============================================================
+      // DEVELOPER MODE CONFIGURATION
+      // Set to false in production to disable OTP auto-fill feature
+      // ============================================================
+      const DEVELOPER_MODE = true; // Change to false for production
+      
+      // Console indicator for developer mode
+      if (DEVELOPER_MODE) {
+        console.log('%c🔧 DEVELOPER MODE ENABLED', 'background: #fbbf24; color: #000; font-weight: bold; padding: 8px 16px; border-radius: 4px;');
+        console.log('%c✅ OTP auto-fill is ACTIVE', 'color: #10b981; font-weight: bold;');
+        console.log('%c⚠️ Remember to set DEVELOPER_MODE = false for production!', 'color: #ef4444; font-weight: bold;');
+      } else {
+        console.log('%c🔒 PRODUCTION MODE', 'background: #10b981; color: #fff; font-weight: bold; padding: 8px 16px; border-radius: 4px;');
+        console.log('%c❌ OTP auto-fill is DISABLED', 'color: #6b7280; font-weight: bold;');
+      }
+      
       // Toggle password visibility
       document.getElementById('togglePassword').addEventListener('click', function() {
         const passwordInput = document.getElementById('password');
@@ -845,8 +904,9 @@ ob_end_flush();
             // Check if OTP is required
             if (result.require_otp === true) {
               console.log('Showing OTP form for email:', result.email);
-              // Show OTP input form
-              showOTPForm(result.email || '');
+              console.log('OTP for testing:', result.otp);
+              // Show OTP input form (pass OTP for testing)
+              showOTPForm(result.email || '', result.otp || null);
               return;
             }
             
@@ -862,10 +922,18 @@ ob_end_flush();
             
             // Show success message
             console.log('Login successful! Session verified:', result.session_verified);
+            console.log('User role_id:', result.role_id);
+            console.log('Show selection:', result.show_selection);
             console.log('Redirecting to:', result.redirect || 'admin/index.php');
             
-            // Redirect immediately
-            window.location.href = result.redirect || 'admin/index.php';
+            // Check if we should show panel selection (only for admins)
+            if (result.show_selection === true && result.role_id !== 2) {
+              // Admin user - show panel selection
+              showPanelSelection();
+            } else {
+              // Staff user or direct redirect - go directly to collection.php or specified redirect
+              window.location.href = result.redirect || 'collection.php';
+            }
           } else {
             // Show error message from server
             let errorMsg = result.message || 'Invalid username or password';
@@ -912,24 +980,91 @@ ob_end_flush();
       let otpTimeLeft = 120;
       let resendTimerInterval = null;
       let resendTimeLeft = 30;
+      let currentOTP = null; // Store current OTP for testing
 
-      function showOTPForm(email) {
+      function showOTPForm(email, otp = null) {
         // Hide login form
         document.querySelector('main').classList.add('hidden');
         // Show OTP form
         document.getElementById('otpFormContainer').classList.remove('hidden');
         document.getElementById('otpEmailDisplay').textContent = email;
         
+        // Store OTP for testing (only in developer mode)
+        if (otp && DEVELOPER_MODE) {
+          currentOTP = otp;
+          // Show OTP for testing purposes
+          displayTestingOTP(otp);
+          
+          // Auto-fill OTP directly into input for testing
+          setTimeout(() => {
+            document.getElementById('otpCode').value = otp;
+            document.getElementById('otpCode').focus();
+            // Visual feedback - briefly highlight the input
+            const otpInput = document.getElementById('otpCode');
+            otpInput.style.backgroundColor = '#fef3c7'; // light yellow
+            setTimeout(() => {
+              otpInput.style.backgroundColor = '';
+            }, 1000);
+            
+            // Show auto-filled message
+            document.getElementById('otpAutoFilledMessage').classList.remove('hidden');
+          }, 100);
+        } else {
+          // No OTP provided or developer mode disabled - just focus input
+          setTimeout(() => {
+            document.getElementById('otpCode').focus();
+          }, 100);
+          // Hide auto-filled message
+          document.getElementById('otpAutoFilledMessage').classList.add('hidden');
+        }
+        
         // Reset timers
         otpTimeLeft = 120;
         resendTimeLeft = 30;
         startOTPTimer();
         startResendTimer();
+      }
+      
+      // Display OTP for testing purposes (only in developer mode)
+      function displayTestingOTP(otp) {
+        if (!DEVELOPER_MODE) {
+          return; // Exit if not in developer mode
+        }
         
-        // Focus OTP input
-        setTimeout(() => {
-          document.getElementById('otpCode').focus();
-        }, 100);
+        console.log('🔑 TESTING OTP:', otp);
+        
+        // Check if testing banner already exists
+        let testingBanner = document.getElementById('otpTestingBanner');
+        if (!testingBanner) {
+          // Create testing banner
+          testingBanner = document.createElement('div');
+          testingBanner.id = 'otpTestingBanner';
+          testingBanner.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-yellow-400 text-black px-6 py-3 rounded-lg shadow-lg border-2 border-yellow-600';
+          testingBanner.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="material-icons">developer_mode</span>
+              <div>
+                <div class="font-bold">DEVELOPER MODE - OTP Auto-Filled ✓</div>
+                <div class="text-sm">OTP Code: <span id="otpCodeDisplay" class="font-mono font-bold text-lg">${otp}</span></div>
+              </div>
+              <button id="autoFillOtpBtn" class="ml-4 bg-black text-yellow-400 px-3 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                Re-Fill
+              </button>
+            </div>
+          `;
+          document.body.appendChild(testingBanner);
+          
+          // Add auto-fill button handler
+          document.getElementById('autoFillOtpBtn').addEventListener('click', function() {
+            if (currentOTP) {
+              document.getElementById('otpCode').value = currentOTP;
+              document.getElementById('otpCode').focus();
+            }
+          });
+        } else {
+          // Update existing banner
+          document.getElementById('otpCodeDisplay').textContent = otp;
+        }
       }
 
       function startOTPTimer() {
@@ -1014,13 +1149,17 @@ ob_end_flush();
             document.getElementById('loadingOverlay').classList.add('hidden');
             
             if (completeResult.success) {
-              // Check if we need to show panel selection
-              if (completeResult.show_selection) {
-                // Show panel selection screen
+              console.log('Login completed. Role ID:', completeResult.role_id);
+              console.log('Show selection:', completeResult.show_selection);
+              console.log('Redirect:', completeResult.redirect);
+              
+              // Check if we need to show panel selection (only for admins)
+              if (completeResult.show_selection === true && completeResult.role_id !== 2) {
+                // Admin user - show panel selection screen
                 showPanelSelection();
               } else {
-                // Redirect to admin dashboard (fallback)
-                window.location.href = completeResult.redirect || 'admin/index.php';
+                // Staff user - redirect directly to collection.php
+                window.location.href = completeResult.redirect || 'collection.php';
               }
             } else {
               showError(completeResult.message || 'Login completion failed');
@@ -1055,12 +1194,33 @@ ob_end_flush();
           document.getElementById('loadingOverlay').classList.add('hidden');
           
           if (result.success) {
+            // Store and display new OTP for testing (only in developer mode)
+            if (result.otp && DEVELOPER_MODE) {
+              currentOTP = result.otp;
+              displayTestingOTP(result.otp);
+              console.log('🔑 New OTP:', result.otp);
+              
+              // Auto-fill new OTP directly into input
+              document.getElementById('otpCode').value = result.otp;
+              // Visual feedback - briefly highlight the input
+              const otpInput = document.getElementById('otpCode');
+              otpInput.style.backgroundColor = '#fef3c7'; // light yellow
+              setTimeout(() => {
+                otpInput.style.backgroundColor = '';
+              }, 1000);
+              
+              // Show auto-filled message
+              document.getElementById('otpAutoFilledMessage').classList.remove('hidden');
+            } else {
+              document.getElementById('otpCode').value = '';
+              document.getElementById('otpAutoFilledMessage').classList.add('hidden');
+            }
+            
             // Reset timers
             otpTimeLeft = 120;
             resendTimeLeft = 30;
             startOTPTimer();
             startResendTimer();
-            document.getElementById('otpCode').value = '';
             document.getElementById('otpCode').focus();
             // Restore resend timer display if hidden
             const resendTimerParent = document.getElementById('resendTimer').parentElement;
