@@ -105,8 +105,8 @@ CREATE TABLE products (
     description TEXT DEFAULT NULL,
     category_id INT UNSIGNED DEFAULT NULL,
     supplier_id INT UNSIGNED DEFAULT NULL,
-    price_regular DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT 'Regular/MRP price',
-    price_selling DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT 'Selling price',
+    price_buying DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT 'Buying/Purchase price',
+    price_selling DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT 'Selling price (must be > buying price)',
     quantity INT NOT NULL DEFAULT 0 COMMENT 'Current stock quantity',
     low_stock_threshold INT NOT NULL DEFAULT 5 COMMENT 'Alert when stock <= this value',
     image_url VARCHAR(500) DEFAULT NULL COMMENT 'Product image URL or path',
@@ -511,7 +511,7 @@ SELECT
     p.id,
     p.sku,
     p.name,
-    p.price_regular,
+    p.price_buying,
     p.price_selling,
     p.quantity as stock_quantity,
     p.low_stock_threshold,
@@ -560,10 +560,10 @@ INSERT INTO suppliers (company_name, contact_person, phone, email, status) VALUE
 ('Tech Suppliers Ltd', 'John Smith', '94771234567', 'contact@techsuppliers.lk', 'active');
 
 -- Sample Products
-INSERT INTO products (sku, name, description, category_id, supplier_id, price_regular, price_selling, quantity, low_stock_threshold, status) VALUES
-('P001', 'Wireless Headphones', 'High-quality wireless headphones with noise cancellation', 1, 1, 120.00, 99.99, 25, 5, 'active'),
-('P002', 'Laptop Stand', 'Adjustable aluminum laptop stand', 2, 1, 60.00, 49.99, 12, 3, 'active'),
-('P003', 'USB-C Cable', 'Fast charging USB-C cable', 3, 1, 25.00, 19.99, 50, 10, 'active');
+INSERT INTO products (sku, name, description, category_id, supplier_id, price_buying, price_selling, quantity, low_stock_threshold, status) VALUES
+('P001', 'Wireless Headphones', 'High-quality wireless headphones with noise cancellation', 1, 1, 80.00, 120.00, 25, 5, 'active'),
+('P002', 'Laptop Stand', 'Adjustable aluminum laptop stand', 2, 1, 35.00, 60.00, 12, 3, 'active'),
+('P003', 'USB-C Cable', 'Fast charging USB-C cable', 3, 1, 15.00, 25.00, 50, 10, 'active');
 
 -- =====================================================
 -- GRANT PERMISSIONS (Adjust as needed for your MySQL users)

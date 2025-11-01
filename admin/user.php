@@ -60,6 +60,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <link rel="stylesheet" href="assets/css/components.css?v=<?php echo time(); ?>">
   </head>
   <body class="bg-background-light">
+    <?php echo getDeveloperBanner(); ?>
     <div class="flex h-screen">
       <?php $activePage = 'user'; include __DIR__ . '/partials/menu.php'; ?>
       <div class="flex-1 flex flex-col">

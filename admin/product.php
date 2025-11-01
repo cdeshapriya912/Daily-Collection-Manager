@@ -53,6 +53,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <link rel="stylesheet" href="assets/css/components.css?v=<?php echo time(); ?>">
   </head>
   <body class="bg-background-light">
+    <?php echo getDeveloperBanner(); ?>
     <div class="flex h-screen">
       <?php $activePage = 'product'; include __DIR__ . '/partials/menu.php'; ?>
       <div class="flex-1 flex flex-col">
@@ -91,7 +92,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
               </button>
             </div>
             <div class="flex flex-col sm:flex-row gap-4">
-              <div class="w-full sm:w-48">
+                <div class="w-full sm:w-48">
                 <label for="categorySelect" class="block text-sm font-medium text-text-light mb-2">Category</label>
                 <div class="relative">
                   <select 
@@ -99,11 +100,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                     class="w-full px-4 py-3 pr-10 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none bg-white bg-none cursor-pointer hover:border-primary/50 transition-colors"
                   >
                     <option value="">All Categories</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Accessories">Accessories</option>
-                    <option value="Cables">Cables</option>
-                    <option value="Furniture">Furniture</option>
-                    <option value="Clothing">Clothing</option>
+                    <!-- Categories will be loaded dynamically -->
                   </select>
                   <span class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-text-light">
                     <span class="material-icons">expand_more</span>
@@ -147,7 +144,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">ID</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Photo</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Product Name</th>
-                      <th class="text-left py-3 px-4 font-semibold text-heading-light">Regular Price</th>
+                      <th class="text-left py-3 px-4 font-semibold text-heading-light">Buying Price</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Selling Price</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Quantity</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Action</th>
@@ -274,9 +271,113 @@ $full_name = $_SESSION['full_name'] ?? 'User';
       <!-- mobile backdrop -->
       <div id="sidebarBackdrop" class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"></div>
     </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-border-light px-6 py-4 flex items-center justify-between">
+          <h3 class="text-2xl font-bold text-heading-light">Edit Product</h3>
+          <button id="closeEditModal" class="text-text-light hover:text-heading-light p-2 rounded-lg hover:bg-gray-100">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <form id="editProductForm" class="p-6">
+          <input type="hidden" id="editProductId">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Product Name -->
+            <div>
+              <label for="editProductName" class="block text-sm font-medium text-heading-light mb-2">Product Name *</label>
+              <input type="text" id="editProductName" required class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+            </div>
+
+            <!-- Product ID -->
+            <div>
+              <label for="editProductSKU" class="block text-sm font-medium text-heading-light mb-2">Product ID *</label>
+              <input type="text" id="editProductSKU" required class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-gray-100" readonly>
+            </div>
+
+            <!-- Category -->
+            <div>
+              <label for="editCategory" class="block text-sm font-medium text-heading-light mb-2">Category *</label>
+              <select id="editCategory" required class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                <option value="">Select Category</option>
+              </select>
+            </div>
+
+            <!-- Supplier -->
+            <div>
+              <label for="editSupplier" class="block text-sm font-medium text-heading-light mb-2">Supplier *</label>
+              <select id="editSupplier" required class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                <option value="">Select Supplier</option>
+              </select>
+            </div>
+
+            <!-- Buying Price -->
+            <div>
+              <label for="editBuyingPrice" class="block text-sm font-medium text-heading-light mb-2">Buying Price *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-light">Rs.</span>
+                <input type="number" id="editBuyingPrice" step="0.01" min="0" required class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+              </div>
+              <p class="text-xs text-text-light mt-1">Cost price you paid to supplier</p>
+            </div>
+
+            <!-- Selling Price -->
+            <div>
+              <label for="editSellingPrice" class="block text-sm font-medium text-heading-light mb-2">Selling Price *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-light">Rs.</span>
+                <input type="number" id="editSellingPrice" step="0.01" min="0" required class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+              </div>
+              <p class="text-xs text-text-light mt-1">Must be greater than buying price</p>
+            </div>
+
+            <!-- Quantity -->
+            <div>
+              <label for="editQuantity" class="block text-sm font-medium text-heading-light mb-2">Quantity *</label>
+              <input type="number" id="editQuantity" min="0" required class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+            </div>
+
+            <!-- Status -->
+            <div>
+              <label for="editStatus" class="block text-sm font-medium text-heading-light mb-2">Status *</label>
+              <select id="editStatus" required class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="out_of_stock">Out of Stock</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mt-6">
+            <label for="editDescription" class="block text-sm font-medium text-heading-light mb-2">Description</label>
+            <textarea id="editDescription" rows="3" class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"></textarea>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="mt-6 flex items-center justify-end gap-4">
+            <button type="button" id="cancelEditBtn" class="px-6 py-3 border border-border-light text-text-light rounded-lg hover:bg-gray-50 transition-colors">
+              Cancel
+            </button>
+            <button type="submit" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+              <span class="material-icons">save</span>
+              Update Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <button id="installBtn" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-3 rounded-lg shadow-lg hidden">Install app</button>
+    <!-- Load dialog modules first (must load before product.js) -->
+    <script src="assets/js/confirmation-dialog.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/notification-dialog.js?v=<?php echo time(); ?>"></script>
+    <!-- Load other scripts -->
     <script src="js/app.js?v=15" defer></script>
-    <script src="js/product.js?v=15" defer></script>
+    <script src="js/product.js?v=<?php echo time(); ?>" defer></script>
     <script>
       // submenu handled in partials/menu.php
       // Responsive table: add data-labels from headers for mobile cards

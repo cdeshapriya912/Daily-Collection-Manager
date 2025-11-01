@@ -55,6 +55,7 @@ $username = $_SESSION['username'] ?? '';
     <link rel="stylesheet" href="assets/css/components.css?v=<?php echo time(); ?>">
   </head>
   <body class="bg-background-light">
+    <?php echo getDeveloperBanner(); ?>
     <div class="flex h-screen">
       <?php $activePage = 'dashboard'; include __DIR__ . '/partials/menu.php'; ?>
       <div class="flex-1 flex flex-col">

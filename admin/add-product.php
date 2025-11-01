@@ -43,6 +43,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <link rel="stylesheet" href="assets/css/components.css?v=<?php echo time(); ?>">
   </head>
   <body class="bg-background-light">
+    <?php echo getDeveloperBanner(); ?>
     <div class="flex h-screen">
       <?php $activePage = 'add-product'; include __DIR__ . '/partials/menu.php'; ?>
       <div class="flex-1 flex flex-col">
@@ -107,11 +108,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                   <div class="relative">
                     <select id="category" required class="w-full px-4 py-3 pr-10 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none bg-white bg-none">
                       <option value="">Select Category</option>
-                      <option value="Electronics">Electronics</option>
-                      <option value="Accessories">Accessories</option>
-                      <option value="Cables">Cables</option>
-                      <option value="Furniture">Furniture</option>
-                      <option value="Clothing">Clothing</option>
+                      <!-- Categories will be loaded dynamically -->
                     </select>
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                       <span class="material-icons">expand_more</span>
@@ -125,9 +122,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                   <div class="relative">
                     <select id="supplier" required class="w-full px-4 py-3 pr-10 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none bg-white bg-none">
                       <option value="">Select Supplier</option>
-                      <option value="TechSource Pvt Ltd">TechSource Pvt Ltd</option>
-                      <option value="GreenLeaf Trading">GreenLeaf Trading</option>
-                      <option value="SilverLine Imports">SilverLine Imports</option>
+                      <!-- Suppliers will be loaded dynamically -->
                     </select>
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                       <span class="material-icons">expand_more</span>
@@ -135,13 +130,14 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                   </div>
                 </div>
 
-                <!-- Regular Price -->
+                <!-- Buying Price -->
                 <div>
-                  <label for="regularPrice" class="block text-sm font-medium text-heading-light mb-2">Regular Price *</label>
+                  <label for="buyingPrice" class="block text-sm font-medium text-heading-light mb-2">Buying Price *</label>
                   <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-light">Rs.</span>
-                    <input type="number" id="regularPrice" step="0.01" required class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                    <input type="number" id="buyingPrice" step="0.01" min="0" required class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
                   </div>
+                  <p class="text-xs text-text-light mt-1">Cost price you paid to supplier</p>
                 </div>
 
                 <!-- Selling Price -->
@@ -149,8 +145,9 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                   <label for="sellingPrice" class="block text-sm font-medium text-heading-light mb-2">Selling Price *</label>
                   <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-light">Rs.</span>
-                    <input type="number" id="sellingPrice" step="0.01" required class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                    <input type="number" id="sellingPrice" step="0.01" min="0" required class="w-full pl-10 pr-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
                   </div>
+                  <p class="text-xs text-text-light mt-1">Must be greater than buying price</p>
                 </div>
 
                 <!-- Quantity -->
@@ -184,16 +181,185 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     </div>
     <button id="installBtn" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-3 rounded-lg shadow-lg hidden">Install app</button>
     <script src="js/app.js?v=15" defer></script>
+    <script src="assets/js/notification-dialog.js"></script>
     <script>
+      // Load categories from database
+      async function loadCategories() {
+        try {
+          const response = await fetch('api/get-categories.php');
+          const data = await response.json();
+          
+          if (data.success) {
+            const categorySelect = document.getElementById('category');
+            data.categories.forEach(category => {
+              const option = document.createElement('option');
+              option.value = category.id;
+              option.textContent = category.name;
+              categorySelect.appendChild(option);
+            });
+          } else {
+            console.error('Failed to load categories:', data.error);
+          }
+        } catch (error) {
+          console.error('Error loading categories:', error);
+        }
+      }
+
+      // Load suppliers from database
+      async function loadSuppliers() {
+        try {
+          const response = await fetch('api/get-suppliers.php');
+          const data = await response.json();
+          
+          if (data.success) {
+            const supplierSelect = document.getElementById('supplier');
+            data.suppliers.forEach(supplier => {
+              const option = document.createElement('option');
+              option.value = supplier.id;
+              option.textContent = supplier.company_name;
+              supplierSelect.appendChild(option);
+            });
+          } else {
+            console.error('Failed to load suppliers:', data.error);
+          }
+        } catch (error) {
+          console.error('Error loading suppliers:', error);
+        }
+      }
+
+      // Load data on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        loadCategories();
+        loadSuppliers();
+      });
+
       // Image preview
       document.getElementById('productImage').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
+          // Validate file size
+          if (file.size > 2 * 1024 * 1024) {
+            showNotificationDialog({
+              title: 'File Too Large',
+              message: 'File size must be less than 2MB. Please choose a smaller image.',
+              type: 'warning'
+            });
+            e.target.value = '';
+            return;
+          }
+          
           const reader = new FileReader();
           reader.onload = function(e) {
             document.getElementById('imagePreview').innerHTML = '<img src="' + e.target.result + '" class="w-full h-full object-cover">';
           };
           reader.readAsDataURL(file);
+        }
+      });
+
+      // Add real-time validation for selling price
+      document.getElementById('sellingPrice').addEventListener('input', function() {
+        validatePrices();
+      });
+      
+      document.getElementById('buyingPrice').addEventListener('input', function() {
+        validatePrices();
+      });
+      
+      function validatePrices() {
+        const buyingPrice = parseFloat(document.getElementById('buyingPrice').value) || 0;
+        const sellingPrice = parseFloat(document.getElementById('sellingPrice').value) || 0;
+        const sellingPriceInput = document.getElementById('sellingPrice');
+        
+        if (buyingPrice > 0 && sellingPrice > 0) {
+          if (sellingPrice <= buyingPrice) {
+            sellingPriceInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            sellingPriceInput.classList.remove('border-border-light', 'focus:border-primary', 'focus:ring-primary');
+          } else {
+            sellingPriceInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            sellingPriceInput.classList.add('border-green-500', 'focus:border-green-500', 'focus:ring-green-500');
+            setTimeout(() => {
+              sellingPriceInput.classList.remove('border-green-500', 'focus:border-green-500', 'focus:ring-green-500');
+              sellingPriceInput.classList.add('border-border-light', 'focus:border-primary', 'focus:ring-primary');
+            }, 1000);
+          }
+        }
+      }
+
+      // Handle form submission
+      document.getElementById('productForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Get values
+        const buyingPrice = parseFloat(document.getElementById('buyingPrice').value) || 0;
+        const sellingPrice = parseFloat(document.getElementById('sellingPrice').value) || 0;
+        
+        // Validate: Selling price must be greater than buying price
+        if (sellingPrice <= buyingPrice) {
+          await showNotificationDialog({
+            title: 'Invalid Price',
+            message: `Selling Price (Rs. ${sellingPrice.toFixed(2)}) must be greater than Buying Price (Rs. ${buyingPrice.toFixed(2)}). Please adjust your prices.`,
+            type: 'warning'
+          });
+          document.getElementById('sellingPrice').focus();
+          return;
+        }
+        
+        // Get form data
+        const formData = new FormData();
+        formData.append('productName', document.getElementById('productName').value);
+        formData.append('productId', document.getElementById('productId').value);
+        formData.append('category', document.getElementById('category').value);
+        formData.append('supplier', document.getElementById('supplier').value);
+        formData.append('buyingPrice', buyingPrice);
+        formData.append('sellingPrice', sellingPrice);
+        formData.append('quantity', document.getElementById('quantity').value);
+        formData.append('description', document.getElementById('description').value);
+        
+        // Add image if selected
+        const imageFile = document.getElementById('productImage').files[0];
+        if (imageFile) {
+          formData.append('productImage', imageFile);
+        }
+        
+        // Disable submit button
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="material-icons animate-spin">refresh</span> Saving...';
+        
+        try {
+          const response = await fetch('api/add-product.php', {
+            method: 'POST',
+            body: formData
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            await showNotificationDialog({
+              title: 'Success!',
+              message: 'Product added successfully!',
+              type: 'success'
+            });
+            window.location.href = 'product.php';
+          } else {
+            await showNotificationDialog({
+              title: 'Error',
+              message: data.error || 'Failed to add product. Please try again.',
+              type: 'error'
+            });
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          await showNotificationDialog({
+            title: 'Network Error',
+            message: 'An error occurred while adding the product. Please check your connection and try again.',
+            type: 'error'
+          });
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
         }
       });
 

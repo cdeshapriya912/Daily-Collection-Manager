@@ -1,0 +1,6 @@
+# Ignore all uploaded files
+*
+# Except .gitignore files and product directory
+!.gitignore
+!product/
+

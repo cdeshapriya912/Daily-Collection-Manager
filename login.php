@@ -19,6 +19,18 @@ ini_set('log_errors', 1);
 // Suppress any output from session_start
 @session_start();
 
+// Check for developer mode
+require_once __DIR__ . '/admin/config/developer-mode.php';
+if (isDeveloperMode()) {
+    // Initialize developer session
+    initDeveloperMode();
+    
+    // Redirect to admin dashboard
+    ob_end_clean();
+    header('Location: admin/index.php');
+    exit;
+}
+
 // Handle login POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['password'])) {
     // Clean any output that might have been generated

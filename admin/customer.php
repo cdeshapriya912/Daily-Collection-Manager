@@ -133,123 +133,11 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                     </tr>
                   </thead>
                   <tbody id="customerTableBody">
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">C001</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Robert Anderson</td>
-                      <td class="py-3 px-4 text-text-light">robert.a@email.com</td>
-                      <td class="py-3 px-4 text-text-light">+1 555-0101</td>
-                      <td class="py-3 px-4 text-red-600 font-semibold">Rs. 250.00</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="View">
-                            <span class="material-icons text-lg">visibility</span>
-                          </button>
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">C002</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Emily Martinez</td>
-                      <td class="py-3 px-4 text-text-light">emily.m@email.com</td>
-                      <td class="py-3 px-4 text-text-light">+1 555-0102</td>
-                      <td class="py-3 px-4 text-green-600 font-semibold">Rs. 0.00</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="View">
-                            <span class="material-icons text-lg">visibility</span>
-                          </button>
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">C003</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">David Thompson</td>
-                      <td class="py-3 px-4 text-text-light">david.t@email.com</td>
-                      <td class="py-3 px-4 text-text-light">+1 555-0103</td>
-                      <td class="py-3 px-4 text-red-600 font-semibold">Rs. 125.50</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="View">
-                            <span class="material-icons text-lg">visibility</span>
-                          </button>
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">C004</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Sarah Wilson</td>
-                      <td class="py-3 px-4 text-text-light">sarah.wilson@email.com</td>
-                      <td class="py-3 px-4 text-text-light">+1 555-0104</td>
-                      <td class="py-3 px-4 text-green-600 font-semibold">Rs. 0.00</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="View">
-                            <span class="material-icons text-lg">visibility</span>
-                          </button>
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">C005</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Michael Brown</td>
-                      <td class="py-3 px-4 text-text-light">michael.b@email.com</td>
-                      <td class="py-3 px-4 text-text-light">+1 555-0105</td>
-                      <td class="py-3 px-4 text-red-600 font-semibold">Rs. 575.25</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="View">
-                            <span class="material-icons text-lg">visibility</span>
-                          </button>
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr class="border-b border-border-light hover:bg-gray-50">
-                      <td class="py-3 px-4 text-text-light">C006</td>
-                      <td class="py-3 px-4 text-heading-light font-medium">Jessica Davis</td>
-                      <td class="py-3 px-4 text-text-light">jessica.d@email.com</td>
-                      <td class="py-3 px-4 text-text-light">+1 555-0106</td>
-                      <td class="py-3 px-4 text-red-600 font-semibold">Rs. 89.99</td>
-                      <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                          <button class="text-blue-600 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="View">
-                            <span class="material-icons text-lg">visibility</span>
-                          </button>
-                          <button class="text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit">
-                            <span class="material-icons text-lg">edit</span>
-                          </button>
-                          <button class="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete">
-                            <span class="material-icons text-lg">delete</span>
-                          </button>
+                    <tr>
+                      <td colspan="6" class="py-8 text-center text-text-light">
+                        <div class="flex flex-col items-center gap-2">
+                          <span class="material-icons text-4xl animate-spin">refresh</span>
+                          <p>Loading customers...</p>
                         </div>
                       </td>
                     </tr>
@@ -264,43 +152,316 @@ $full_name = $_SESSION['full_name'] ?? 'User';
       <div id="sidebarBackdrop" class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"></div>
     </div>
     <button id="installBtn" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-3 rounded-lg shadow-lg hidden">Install app</button>
+    
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-border-light px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h3 class="text-xl font-bold text-heading-light">Add New Customer</h3>
+          <button id="closeAddModal" class="text-text-light hover:text-heading-light">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <form id="addCustomerForm" class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Customer Name -->
+            <div class="md:col-span-2">
+              <label for="addCustomerName" class="block text-sm font-medium text-text-light mb-2">
+                Customer Name <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="addCustomerName" 
+                name="full_name" 
+                required
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                placeholder="Enter customer name"
+              >
+            </div>
+            
+            <!-- Email -->
+            <div>
+              <label for="addCustomerEmail" class="block text-sm font-medium text-text-light mb-2">
+                Email
+              </label>
+              <input 
+                type="email" 
+                id="addCustomerEmail" 
+                name="email"
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                placeholder="customer@example.com"
+              >
+            </div>
+            
+            <!-- Mobile -->
+            <div>
+              <label for="addCustomerMobile" class="block text-sm font-medium text-text-light mb-2">
+                Mobile <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="tel" 
+                id="addCustomerMobile" 
+                name="mobile" 
+                required
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                placeholder="+94 77 123 4567"
+              >
+            </div>
+            
+            <!-- Address -->
+            <div class="md:col-span-2">
+              <label for="addCustomerAddress" class="block text-sm font-medium text-text-light mb-2">
+                Address
+              </label>
+              <textarea 
+                id="addCustomerAddress" 
+                name="address" 
+                rows="3"
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+                placeholder="Enter customer address"
+              ></textarea>
+            </div>
+            
+            <!-- Status -->
+            <div>
+              <label for="addCustomerStatus" class="block text-sm font-medium text-text-light mb-2">
+                Status
+              </label>
+              <select 
+                id="addCustomerStatus" 
+                name="status"
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="blocked">Blocked</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              type="button" 
+              id="cancelAddBtn"
+              class="flex-1 px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              class="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Add Customer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Edit Customer Modal -->
+    <div id="editCustomerModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-border-light px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h3 class="text-xl font-bold text-heading-light">Edit Customer</h3>
+          <button id="closeEditModal" class="text-text-light hover:text-heading-light">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <form id="editCustomerForm" class="p-6">
+          <input type="hidden" id="editCustomerId" name="id">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Customer Name -->
+            <div class="md:col-span-2">
+              <label for="editCustomerName" class="block text-sm font-medium text-text-light mb-2">
+                Customer Name <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="editCustomerName" 
+                name="full_name" 
+                required
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                placeholder="Enter customer name"
+              >
+            </div>
+            
+            <!-- Email -->
+            <div>
+              <label for="editCustomerEmail" class="block text-sm font-medium text-text-light mb-2">
+                Email
+              </label>
+              <input 
+                type="email" 
+                id="editCustomerEmail" 
+                name="email"
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                placeholder="customer@example.com"
+              >
+            </div>
+            
+            <!-- Mobile -->
+            <div>
+              <label for="editCustomerMobile" class="block text-sm font-medium text-text-light mb-2">
+                Mobile <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="tel" 
+                id="editCustomerMobile" 
+                name="mobile" 
+                required
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                placeholder="+94 77 123 4567"
+              >
+            </div>
+            
+            <!-- Address -->
+            <div class="md:col-span-2">
+              <label for="editCustomerAddress" class="block text-sm font-medium text-text-light mb-2">
+                Address
+              </label>
+              <textarea 
+                id="editCustomerAddress" 
+                name="address" 
+                rows="3"
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+                placeholder="Enter customer address"
+              ></textarea>
+            </div>
+            
+            <!-- Status -->
+            <div>
+              <label for="editCustomerStatus" class="block text-sm font-medium text-text-light mb-2">
+                Status
+              </label>
+              <select 
+                id="editCustomerStatus" 
+                name="status"
+                class="w-full px-4 py-3 border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="blocked">Blocked</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              type="button" 
+              id="cancelEditBtn"
+              class="flex-1 px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              class="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Update Customer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- View Customer Modal -->
+    <div id="viewCustomerModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-border-light px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <h3 class="text-xl font-bold text-heading-light">Customer Details</h3>
+          <button id="closeViewModal" class="text-text-light hover:text-heading-light">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <div class="p-6">
+          <!-- Customer Info Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Customer Code -->
+            <div>
+              <label class="block text-sm font-medium text-text-light mb-1">Customer Code</label>
+              <p class="text-heading-light font-semibold text-lg" id="viewCustomerCode">-</p>
+            </div>
+            
+            <!-- Status -->
+            <div>
+              <label class="block text-sm font-medium text-text-light mb-1">Status</label>
+              <span id="viewCustomerStatus" class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">Active</span>
+            </div>
+            
+            <!-- Full Name -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-text-light mb-1">Full Name</label>
+              <p class="text-heading-light font-semibold text-lg" id="viewCustomerName">-</p>
+            </div>
+            
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-medium text-text-light mb-1">Email</label>
+              <p class="text-heading-light" id="viewCustomerEmail">-</p>
+            </div>
+            
+            <!-- Mobile -->
+            <div>
+              <label class="block text-sm font-medium text-text-light mb-1">Mobile</label>
+              <p class="text-heading-light" id="viewCustomerMobile">-</p>
+            </div>
+            
+            <!-- Address -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-text-light mb-1">Address</label>
+              <p class="text-heading-light" id="viewCustomerAddress">-</p>
+            </div>
+          </div>
+          
+          <!-- Financial Summary -->
+          <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-border-light">
+            <h4 class="font-semibold text-heading-light mb-4 flex items-center gap-2">
+              <span class="material-icons">account_balance_wallet</span>
+              Financial Summary
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Total Purchased -->
+              <div>
+                <label class="block text-sm font-medium text-text-light mb-1">Total Purchased</label>
+                <p class="text-heading-light font-semibold" id="viewCustomerTotalPurchased">Rs. 0.00</p>
+              </div>
+              
+              <!-- Total Paid -->
+              <div>
+                <label class="block text-sm font-medium text-text-light mb-1">Total Paid</label>
+                <p class="text-heading-light font-semibold" id="viewCustomerTotalPaid">Rs. 0.00</p>
+              </div>
+              
+              <!-- Remaining Balance -->
+              <div>
+                <label class="block text-sm font-medium text-text-light mb-1">Remaining Balance</label>
+                <p id="viewCustomerBalance" class="text-red-600 font-bold text-lg">Rs. 0.00</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              type="button" 
+              id="closeViewBtn"
+              class="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <script src="js/app.js?v=15" defer></script>
+    <script src="assets/js/notification-dialog.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/confirmation-dialog.js?v=<?php echo time(); ?>"></script>
+    <script src="js/customer.js?v=<?php echo time(); ?>"></script>
     <script>
-      // Function to navigate to customer detail page
-      function viewCustomerDetail(customerId, customerName, email, mobile, balance) {
-        // Store customer data in localStorage for the detail page
-        localStorage.setItem('selectedCustomer', JSON.stringify({
-          id: customerId,
-          name: customerName,
-          email: email,
-          mobile: mobile,
-          balance: balance
-        }));
-        
-        // Navigate to customer detail page
-        window.location.href = 'customer-detail.php';
-      }
-      
-      // Update all view buttons with click handlers
-      document.addEventListener('DOMContentLoaded', function() {
-        const viewButtons = document.querySelectorAll('button[title="View"]');
-        const customerData = [
-          { id: 'C001', name: 'Robert Anderson', email: 'robert.a@email.com', mobile: '+1 555-0101', balance: '250.00' },
-          { id: 'C002', name: 'Emily Martinez', email: 'emily.m@email.com', mobile: '+1 555-0102', balance: '0.00' },
-          { id: 'C003', name: 'David Thompson', email: 'david.t@email.com', mobile: '+1 555-0103', balance: '125.50' },
-          { id: 'C004', name: 'Sarah Wilson', email: 'sarah.wilson@email.com', mobile: '+1 555-0104', balance: '0.00' },
-          { id: 'C005', name: 'Michael Brown', email: 'michael.b@email.com', mobile: '+1 555-0105', balance: '575.25' },
-          { id: 'C006', name: 'Jessica Davis', email: 'jessica.d@email.com', mobile: '+1 555-0106', balance: '89.99' }
-        ];
-        
-        viewButtons.forEach((button, index) => {
-          if (customerData[index]) {
-            const customer = customerData[index];
-            button.setAttribute('onclick', `viewCustomerDetail('${customer.id}', '${customer.name}', '${customer.email}', '${customer.mobile}', '${customer.balance}')`);
-          }
-        });
-      });
-
       // Sidebar toggle functionality
       const sidebarToggle = document.getElementById('sidebarToggle');
       const mobileSidebar = document.getElementById('mobileSidebar');

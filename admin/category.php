@@ -1,4 +1,18 @@
 <?php
+/**
+ * Category Management Page
+ * 
+ * Features:
+ * - Real-time category listing from database
+ * - Live product count from products table (calculated on-the-fly)
+ * - No caching - always fresh data
+ * - Search and filter capabilities
+ * - Add/Edit/Delete categories
+ * 
+ * Data Source: MySQL database (SAHANALK.categories + SAHANALK.products)
+ * See: admin/REALTIME_DATA_DOCUMENTATION.md for technical details
+ */
+
 // Admin-only page - requires admin role
 require_once __DIR__ . '/config/admin-auth.php';
 
@@ -38,6 +52,15 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     </script>
     <link rel="stylesheet" href="assets/css/common.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/components.css?v=<?php echo time(); ?>">
+    <style>
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      #liveIndicator {
+        animation: pulse 2s ease-in-out infinite;
+      }
+    </style>
   </head>
   <body class="bg-background-light">
     <div class="flex h-screen">
@@ -116,14 +139,28 @@ $full_name = $_SESSION['full_name'] ?? 'User';
           <!-- Category Table -->
           <div class="bg-card-light rounded-lg border border-border-light">
             <div class="p-6">
-              <h3 class="text-lg font-semibold text-heading-light mb-4">All Categories</h3>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <h3 class="text-lg font-semibold text-heading-light">All Categories</h3>
+                  <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold" id="totalCount">0 Categories</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-text-light">
+                  <span class="material-icons text-primary text-sm" id="liveIndicator" title="Live data indicator">fiber_manual_record</span>
+                  <span id="lastUpdateTime">Loading...</span>
+                </div>
+              </div>
               <div class="overflow-x-auto">
                 <table class="w-full" id="categoryTable">
                   <thead>
                     <tr class="border-b border-border-light">
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Category Name</th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Description</th>
-                      <th class="text-left py-3 px-4 font-semibold text-heading-light">Products</th>
+                      <th class="text-left py-3 px-4 font-semibold text-heading-light">
+                        <div class="flex items-center gap-1">
+                          <span>Products</span>
+                          <span class="material-icons text-sm text-text-light" title="Live count from Products table">info</span>
+                        </div>
+                      </th>
                       <th class="text-left py-3 px-4 font-semibold text-heading-light">Action</th>
                     </tr>
                   </thead>
@@ -132,7 +169,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                       <td colspan="4" class="py-8 text-center text-text-light">
                         <div class="flex flex-col items-center justify-center gap-2">
                           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                          <span>Loading categories...</span>
+                          <span>Loading real-time data from database...</span>
                         </div>
                       </td>
                     </tr>
@@ -245,6 +282,15 @@ $full_name = $_SESSION['full_name'] ?? 'User';
         sidebarToggle.setAttribute('aria-expanded', 'false');
       });
 
+      // ========================================================================
+      // CATEGORY MANAGEMENT - REAL-TIME DATABASE DATA LOADING
+      // ========================================================================
+      // This page loads categories with REAL-TIME product counts from the database.
+      // Product counts are calculated live using SQL subquery from the products table.
+      // NO CACHING is applied - every request fetches fresh data from MySQL.
+      // See REALTIME_DATA_DOCUMENTATION.md for detailed information.
+      // ========================================================================
+
       // Category Management Variables
       let currentEditCategoryId = null;
 
@@ -268,11 +314,39 @@ $full_name = $_SESSION['full_name'] ?? 'User';
         console.log('✅ Table refreshed');
       }
 
-      // Load categories
+      // Update last update time indicator
+      function updateLastUpdateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit',
+          hour12: true 
+        });
+        const lastUpdateEl = document.getElementById('lastUpdateTime');
+        const liveIndicator = document.getElementById('liveIndicator');
+        
+        if (lastUpdateEl) {
+          lastUpdateEl.textContent = `Last updated: ${timeString}`;
+        }
+        
+        // Pulse the live indicator
+        if (liveIndicator) {
+          liveIndicator.style.animation = 'none';
+          setTimeout(() => {
+            liveIndicator.style.animation = 'pulse 1s ease-in-out';
+          }, 10);
+        }
+      }
+
+      // Load categories from real database
       async function loadCategories(search = '', bustCache = false) {
         try {
+          console.log('📊 Fetching real-time data from database...');
+          
           const params = new URLSearchParams();
           if (search) params.append('search', search);
+          // Force fresh data from database
           params.append('_t', Date.now());
           params.append('_r', Math.random());
           
@@ -290,15 +364,22 @@ $full_name = $_SESSION['full_name'] ?? 'User';
           const response = await fetch(url, {
             method: 'GET',
             cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+            headers: { 
+              'Cache-Control': 'no-cache, no-store, must-revalidate', 
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
           });
           
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
           
           const result = await response.json();
           
+          console.log(`✅ Loaded ${result.categories?.length || 0} categories with real-time product counts`);
+          
           if (loadingRow) loadingRow.classList.add('hidden');
           
+          // Remove existing data rows
           const allRows = Array.from(tbody.querySelectorAll('tr'));
           allRows.forEach(row => {
             if (row.id !== 'loadingRow' && row.id !== 'emptyRow') row.remove();
@@ -313,30 +394,51 @@ $full_name = $_SESSION['full_name'] ?? 'User';
           } else {
             if (emptyRow) emptyRow.classList.remove('hidden');
           }
+          
+          // Update total count badge
+          const totalCountEl = document.getElementById('totalCount');
+          if (totalCountEl && result.categories) {
+            const count = result.categories.length;
+            totalCountEl.textContent = `${count} ${count === 1 ? 'Category' : 'Categories'}`;
+          }
+          
+          // Update last update time
+          updateLastUpdateTime();
+          
         } catch (error) {
-          console.error('Failed to load categories:', error);
+          console.error('❌ Failed to load categories:', error);
           showNotification('Failed to load categories: ' + error.message, 'error');
         }
       }
 
-      // Create category row
+      // Create category row with real-time product count
       function createCategoryRow(category) {
         if (!category || !category.id) return null;
         
         const tr = document.createElement('tr');
-        tr.className = 'border-b border-border-light hover:bg-gray-50';
+        tr.className = 'border-b border-border-light hover:bg-gray-50 transition-colors';
         tr.dataset.categoryId = category.id;
+        
+        // Product count badge styling
+        const productCount = category.product_count || 0;
+        const badgeColor = productCount > 0 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500';
         
         tr.innerHTML = `
           <td class="py-3 px-4 text-heading-light font-medium">${escapeHtml(category.name)}</td>
           <td class="py-3 px-4 text-text-light">${escapeHtml(category.description || '-')}</td>
-          <td class="py-3 px-4 text-primary font-semibold">${category.product_count || 0}</td>
           <td class="py-3 px-4">
             <div class="flex items-center gap-2">
-              <button class="edit-category-btn text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit" data-category-id="${category.id}">
+              <span class="px-3 py-1 rounded-full ${badgeColor} font-semibold text-sm" title="Real-time count from products table">
+                ${productCount} ${productCount === 1 ? 'Product' : 'Products'}
+              </span>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <button class="edit-category-btn text-primary hover:text-primary/80 p-2 rounded-lg hover:bg-primary/10 transition-colors" title="Edit Category" data-category-id="${category.id}">
                 <span class="material-icons text-lg">edit</span>
               </button>
-              <button class="delete-category-btn text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete" data-category-id="${category.id}">
+              <button class="delete-category-btn text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete Category" data-category-id="${category.id}">
                 <span class="material-icons text-lg">delete</span>
               </button>
             </div>
