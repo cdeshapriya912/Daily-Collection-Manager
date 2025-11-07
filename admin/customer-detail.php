@@ -309,7 +309,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
             </div>
 
             <!-- Edit Schedule Entry Modal -->
-            <div id="editScheduleModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" style="display: none;">
+            <div id="editScheduleModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 items-center justify-center p-4" style="display: none; z-index: 9999;">
               <div class="relative w-full max-w-md bg-white rounded-lg overflow-hidden">
                 <button id="closeEditScheduleModal" class="absolute top-4 right-4 z-10 bg-white/90 hover:bg-white rounded-full p-2 transition-colors shadow-lg">
                   <span class="material-icons text-heading-light">close</span>
@@ -828,7 +828,9 @@ $full_name = $_SESSION['full_name'] ?? 'User';
             titleElement.textContent = `${maxPeriod}-Day Payment Schedule`;
           }
           
+          console.log('About to call displayAllPaymentSchedules with', allSchedules.length, 'schedules');
           displayAllPaymentSchedules(allSchedules);
+          console.log('displayAllPaymentSchedules call completed');
         } catch (error) {
           console.error('Error loading all payment schedules:', error);
           displayAllPaymentSchedules([]);
@@ -837,6 +839,8 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
       // Display all payment schedules in the table
       function displayAllPaymentSchedules(schedules) {
+        console.log('displayAllPaymentSchedules called with:', schedules?.length || 0, 'schedules');
+        
         const paymentScheduleBody = document.getElementById('paymentScheduleBody');
         
         if (!paymentScheduleBody) {
@@ -845,6 +849,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
         }
         
         if (!schedules || schedules.length === 0) {
+          console.log('No schedules to display, showing empty state');
           paymentScheduleBody.innerHTML = `
             <tr>
               <td colspan="5" class="py-8 text-center text-text-light">
@@ -856,62 +861,102 @@ $full_name = $_SESSION['full_name'] ?? 'User';
           return;
         }
         
+        console.log('Building table with', schedules.length, 'schedules');
+        
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
         // Build table rows
-        paymentScheduleBody.innerHTML = schedules.map(schedule => {
-          const scheduleDate = new Date(schedule.schedule_date);
-          scheduleDate.setHours(0, 0, 0, 0);
-          const isOverdue = schedule.is_overdue || (schedule.status === 'pending' && scheduleDate < today);
-          
-          let statusClass = 'text-yellow-600';
-          let statusText = 'Not Paid';
-          if (schedule.status === 'paid') {
-            statusClass = 'text-green-600';
-            statusText = 'Paid';
-          } else if (schedule.status === 'missed' || isOverdue) {
-            statusClass = 'text-red-600';
-            statusText = 'Missed';
-          } else if (schedule.status === 'partial') {
-            statusClass = 'text-orange-600';
-            statusText = 'Partially Paid';
-          }
-          
-          const rowClass = isOverdue ? 'bg-red-50' : '';
-          const dueAmount = parseFloat(schedule.due_amount || 0).toFixed(2);
-          const paidAmount = parseFloat(schedule.paid_amount || 0).toFixed(2);
-          
-          // Format date for input field (YYYY-MM-DD)
-          const dateInputValue = schedule.schedule_date ? schedule.schedule_date.split('T')[0] : '';
-          // Escape values for onclick handler
-          const escapedDate = dateInputValue.replace(/'/g, "\\'");
-          const escapedStatus = (schedule.status || 'pending').replace(/'/g, "\\'");
-          
-          return `
-            <tr class="${rowClass} border-b border-border-light hover:bg-gray-50">
-              <td class="py-3 px-4 text-text-light">${scheduleDate.toLocaleDateString('en-GB', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
-              })}</td>
-              <td class="py-3 px-4 text-heading-light font-semibold">Rs. ${dueAmount}</td>
-              <td class="py-3 px-4 text-green-600 font-medium">Rs. ${paidAmount}</td>
-              <td class="py-3 px-4 ${statusClass} font-medium">${statusText}</td>
-              <td class="py-3 px-4">
-                <button data-schedule-id="${schedule.id}" 
-                        data-schedule-date="${escapedDate}" 
-                        data-due-amount="${schedule.due_amount || 0}" 
-                        data-paid-amount="${schedule.paid_amount || 0}" 
-                        data-status="${escapedStatus}"
-                        class="edit-schedule-btn flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                  <span class="material-icons text-sm">edit</span>
-                  <span>Edit</span>
-                </button>
+        let tableHTML = '';
+        try {
+          tableHTML = schedules.map(schedule => {
+            // Validate schedule data
+            if (!schedule || !schedule.schedule_date) {
+              console.warn('Invalid schedule data:', schedule);
+              return '';
+            }
+            
+            const scheduleDate = new Date(schedule.schedule_date);
+            if (isNaN(scheduleDate.getTime())) {
+              console.warn('Invalid date in schedule:', schedule.schedule_date);
+              return '';
+            }
+            
+            scheduleDate.setHours(0, 0, 0, 0);
+            const isOverdue = schedule.is_overdue || (schedule.status === 'pending' && scheduleDate < today);
+            
+            let statusClass = 'text-yellow-600';
+            let statusText = 'Not Paid';
+            if (schedule.status === 'paid') {
+              statusClass = 'text-green-600';
+              statusText = 'Paid';
+            } else if (schedule.status === 'missed' || isOverdue) {
+              statusClass = 'text-red-600';
+              statusText = 'Missed';
+            } else if (schedule.status === 'partial') {
+              statusClass = 'text-orange-600';
+              statusText = 'Partially Paid';
+            }
+            
+            const rowClass = isOverdue ? 'bg-red-50' : '';
+            const dueAmount = parseFloat(schedule.due_amount || 0).toFixed(2);
+            const paidAmount = parseFloat(schedule.paid_amount || 0).toFixed(2);
+            
+            // Format date for input field (YYYY-MM-DD)
+            const dateInputValue = schedule.schedule_date ? schedule.schedule_date.split('T')[0] : '';
+            // Escape values for data attributes
+            const escapedDate = dateInputValue.replace(/'/g, "\\'");
+            const escapedStatus = (schedule.status || 'pending').replace(/'/g, "\\'");
+            
+            return `
+              <tr class="${rowClass} border-b border-border-light hover:bg-gray-50">
+                <td class="py-3 px-4 text-text-light">${scheduleDate.toLocaleDateString('en-GB', { 
+                  day: '2-digit', 
+                  month: '2-digit', 
+                  year: 'numeric' 
+                })}</td>
+                <td class="py-3 px-4 text-heading-light font-semibold">Rs. ${dueAmount}</td>
+                <td class="py-3 px-4 text-green-600 font-medium">Rs. ${paidAmount}</td>
+                <td class="py-3 px-4 ${statusClass} font-medium">${statusText}</td>
+                <td class="py-3 px-4">
+                  <button type="button" 
+                          data-schedule-id="${schedule.id || ''}" 
+                          data-schedule-date="${escapedDate}" 
+                          data-due-amount="${schedule.due_amount || 0}" 
+                          data-paid-amount="${schedule.paid_amount || 0}" 
+                          data-status="${escapedStatus}"
+                          class="edit-schedule-btn flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm cursor-pointer">
+                    <span class="material-icons text-sm">edit</span>
+                    <span>Edit</span>
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).filter(row => row !== '').join('');
+        } catch (error) {
+          console.error('Error building table rows:', error);
+          console.error('Schedule data that caused error:', schedules);
+          tableHTML = `
+            <tr>
+              <td colspan="5" class="py-8 text-center text-red-600">
+                <p>Error displaying schedules: ${error.message}</p>
               </td>
             </tr>
           `;
-        }).join('');
+        }
+        
+        console.log('Table HTML generated, length:', tableHTML.length);
+        console.log('Setting innerHTML on paymentScheduleBody');
+        
+        // Set innerHTML
+        paymentScheduleBody.innerHTML = tableHTML;
+        
+        console.log('Table updated, re-setting up event handlers');
+        
+        // Re-setup event handlers after updating the table
+        setTimeout(() => {
+          setupEditButtonHandlers();
+        }, 100);
       }
 
       // Load installment schedule (for detail view - optional)
@@ -1555,17 +1600,31 @@ $full_name = $_SESSION['full_name'] ?? 'User';
       }
       
       // Event delegation for edit buttons (works with dynamically generated buttons)
-      // Set up after DOM is ready
+      // Use a more reliable event delegation approach
       function setupEditButtonHandlers() {
-        // Remove any existing listeners by using a named function
-        document.removeEventListener('click', handleEditButtonClick);
-        document.addEventListener('click', handleEditButtonClick);
+        // Use event delegation on the payment schedule table body
+        const paymentScheduleBody = document.getElementById('paymentScheduleBody');
+        if (paymentScheduleBody) {
+          // Remove old listener if exists
+          paymentScheduleBody.removeEventListener('click', handleEditButtonClick);
+          // Add new listener
+          paymentScheduleBody.addEventListener('click', handleEditButtonClick);
+          console.log('Edit button handlers set up on paymentScheduleBody');
+        } else {
+          console.warn('paymentScheduleBody not found, will retry after data loads');
+        }
       }
       
       function handleEditButtonClick(e) {
         // Check if clicked element or its parent has the edit button class
-        const btn = e.target.closest('.edit-schedule-btn');
-        if (btn) {
+        let btn = e.target.closest('.edit-schedule-btn');
+        
+        // If clicking on icon or text inside button, get the button
+        if (!btn && (e.target.classList.contains('material-icons') || e.target.tagName === 'SPAN')) {
+          btn = e.target.closest('button');
+        }
+        
+        if (btn && btn.classList.contains('edit-schedule-btn')) {
           e.preventDefault();
           e.stopPropagation();
           
@@ -1585,10 +1644,11 @@ $full_name = $_SESSION['full_name'] ?? 'User';
             console.error('Schedule ID not found on edit button');
             alert('Error: Schedule ID not found');
           }
+          return false;
         }
       }
       
-      // Initialize event handlers
+      // Initialize event handlers immediately
       setupEditButtonHandlers();
 
       // Edit Schedule Form Handler
