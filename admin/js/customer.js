@@ -83,8 +83,13 @@
     }).join('');
   }
 
-  // View customer details (global)
+  // View customer details - redirect to detail page
   window.viewCustomer = async function(customerId) {
+    window.location.href = `customer-detail.php?id=${customerId}`;
+  };
+  
+  // Legacy function for modal view (kept for backward compatibility)
+  window.viewCustomerModal = async function(customerId) {
     try {
       const response = await fetch(`api/get-customer-detail.php?id=${customerId}`);
       const data = await response.json();
@@ -401,4 +406,5 @@
     loadCustomers(); // Load all customers initially
   });
 })();
+
 

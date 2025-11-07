@@ -54,7 +54,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
   </head>
   <body class="bg-background-light">
     <div class="flex h-screen">
-      <?php $activePage = 'customer'; include __DIR__ . '/partials/menu.php'; ?>
+      <?php $activePage = 'customer'; $activeSubPage = 'customer-list'; include __DIR__ . '/partials/menu.php'; ?>
       <div class="flex-1 flex flex-col">
         <header class="flex items-center justify-between p-6 border-b border-border-light">
           <button id="sidebarToggle" class="md:hidden text-text-light" aria-label="Toggle menu" aria-controls="mobileSidebar" aria-expanded="false">

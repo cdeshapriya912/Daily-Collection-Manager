@@ -58,3 +58,8 @@ echo "You can now use the Category page in the admin panel.\n";
 
 
 
+
+
+
+
+

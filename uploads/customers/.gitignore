@@ -1,0 +1,13 @@
+# Ignore all customer uploads (images, documents)
+*
+
+# But keep this .gitignore file
+!.gitignore
+
+# Keep a README for documentation
+!README.md
+
+
+
+
+

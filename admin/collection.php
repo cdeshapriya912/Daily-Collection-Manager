@@ -53,14 +53,10 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <link rel="stylesheet" href="assets/css/components.css?v=<?php echo time(); ?>">
   </head>
   <body class="bg-background-light">
-    <div class="flex h-screen">
-      <?php $activePage = 'collection'; include __DIR__ . '/partials/menu.php'; ?>
-      <div class="flex-1 flex flex-col">
-        <header class="flex items-center justify-between p-6 border-b border-border-light">
-          <button id="sidebarToggle" class="md:hidden text-text-light" aria-label="Toggle menu" aria-controls="mobileSidebar" aria-expanded="false">
-            <span class="material-icons">menu</span>
-          </button>
-          <h2 class="text-2xl font-bold text-heading-light">Collections</h2>
+    <?php echo getDeveloperBanner(); ?>
+    <div class="flex flex-col h-screen">
+      <header class="flex items-center justify-between p-6 border-b border-border-light">
+        <h2 class="text-2xl font-bold text-heading-light">Collections</h2>
           <div class="flex items-center gap-4">
             <button class="text-text-light">
               <span class="material-icons">notifications</span>
@@ -288,9 +284,6 @@ $full_name = $_SESSION['full_name'] ?? 'User';
             </div>
           </div>
         </main>
-      </div>
-      <!-- mobile backdrop -->
-      <div id="sidebarBackdrop" class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"></div>
     </div>
     <button id="installBtn" class="fixed bottom-4 right-4 bg-primary text-white px-4 py-3 rounded-lg shadow-lg hidden">Install app</button>
     <script src="js/app.js?v=15" defer></script>
@@ -612,48 +605,6 @@ $full_name = $_SESSION['full_name'] ?? 'User';
         document.getElementById('customerSearch').value = '';
       });
 
-      // Sidebar toggle functionality
-      const sidebarToggle = document.getElementById('sidebarToggle');
-      const mobileSidebar = document.getElementById('mobileSidebar');
-      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-
-      sidebarToggle.addEventListener('click', function() {
-        const isExpanded = sidebarToggle.getAttribute('aria-expanded') === 'true';
-        
-        if (isExpanded) {
-          // Close sidebar
-          mobileSidebar.classList.add('-translate-x-full');
-          sidebarBackdrop.classList.add('hidden');
-          sidebarToggle.setAttribute('aria-expanded', 'false');
-        } else {
-          // Open sidebar
-          mobileSidebar.classList.remove('-translate-x-full');
-          sidebarBackdrop.classList.remove('hidden');
-          sidebarToggle.setAttribute('aria-expanded', 'true');
-        }
-      });
-
-      // Close sidebar when clicking backdrop
-      sidebarBackdrop.addEventListener('click', function() {
-        mobileSidebar.classList.add('-translate-x-full');
-        sidebarBackdrop.classList.add('hidden');
-        sidebarToggle.setAttribute('aria-expanded', 'false');
-      });
-
-      // Close sidebar when clicking outside on mobile
-      document.addEventListener('click', function(event) {
-        if (window.innerWidth < 768) {
-          const isSidebarOpen = sidebarToggle.getAttribute('aria-expanded') === 'true';
-          const isClickInsideSidebar = mobileSidebar.contains(event.target);
-          const isClickOnToggle = sidebarToggle.contains(event.target);
-          
-          if (isSidebarOpen && !isClickInsideSidebar && !isClickOnToggle) {
-            mobileSidebar.classList.add('-translate-x-full');
-            sidebarBackdrop.classList.add('hidden');
-            sidebarToggle.setAttribute('aria-expanded', 'false');
-          }
-        }
-      });
     </script>
   </body>
 </html>

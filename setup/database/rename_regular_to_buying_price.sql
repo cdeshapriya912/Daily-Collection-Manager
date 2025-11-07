@@ -13,3 +13,8 @@ CHANGE COLUMN price_regular price_buying DECIMAL(10,2) NOT NULL;
 -- FROM INFORMATION_SCHEMA.COLUMNS 
 -- WHERE TABLE_NAME = 'products' AND COLUMN_NAME = 'price_buying';
 
+
+
+
+
+
